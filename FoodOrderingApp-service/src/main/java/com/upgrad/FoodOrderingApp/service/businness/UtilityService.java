@@ -5,6 +5,7 @@ import com.upgrad.FoodOrderingApp.service.dao.CustomerDao;
 import com.upgrad.FoodOrderingApp.service.entity.CustomerAuthTokenEntity;
 import com.upgrad.FoodOrderingApp.service.entity.CustomerEntity;
 import com.upgrad.FoodOrderingApp.service.exception.AuthenticationFailedException;
+import com.upgrad.FoodOrderingApp.service.exception.AuthorizationFailedException;
 import com.upgrad.FoodOrderingApp.service.exception.SignUpRestrictedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -94,6 +95,30 @@ public class UtilityService {
         customerAuthDao.createAuthToken(customerAuthTokenEntity);
         customerDao.updateCustomerEntity(customerEntity);
         return customerAuthTokenEntity;
+    }
+
+    /**
+     * The signout method
+     *
+     * @param accessToken : required to signout the user
+     * @throws AuthorizationFailedException : if the access-token is not found in the DB.
+     * @return UserEntity : that user is signed out.
+     */
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public CustomerEntity logout(final String accessToken) throws AuthorizationFailedException {
+        final CustomerAuthTokenEntity customerAuthTokenEntity = customerAuthDao.getCustomer(accessToken);
+        if(customerAuthTokenEntity == null) {
+            throw new AuthorizationFailedException("ATHR-001", "Customer is not Logged in.");
+        }else if(customerAuthTokenEntity != null && customerAuthTokenEntity.getLogoutAt() != null){
+            throw new AuthorizationFailedException("ATHR-002","Customer is logged out. Log in again to access this endpoint.");
+        }else if (customerAuthTokenEntity != null && customerAuthTokenEntity.getExpiresAt().isBefore(ZonedDateTime.now())){
+            throw new AuthorizationFailedException("ATHR-003","Your session is expired. Log in again to access this endpoint.");
+        }else {
+            customerAuthTokenEntity.setLogoutAt(ZonedDateTime.now());
+            customerAuthDao.updateCustomerAuth(customerAuthTokenEntity);
+            return customerAuthTokenEntity.getCustomer();
+        }
     }
 
     // To check if the username exist in the database

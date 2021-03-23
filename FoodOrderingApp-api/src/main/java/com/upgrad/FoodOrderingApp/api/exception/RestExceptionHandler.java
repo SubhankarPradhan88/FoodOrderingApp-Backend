@@ -13,12 +13,12 @@ import org.springframework.web.context.request.WebRequest;
 @ControllerAdvice
 public class RestExceptionHandler {
 
-//    @ExceptionHandler(AuthorizationFailedException.class)
-//    public ResponseEntity<ErrorResponse> authorizationFailedExceptionHandler(final AuthorizationFailedException exc, final WebRequest request) {
-//        return new ResponseEntity<>(
-//                new ErrorResponse().code(exc.getCode()).message(exc.getErrorMessage()), HttpStatus.FORBIDDEN
-//        );
-//    }
+    @ExceptionHandler(AuthorizationFailedException.class)
+    public ResponseEntity<ErrorResponse> authorizationFailedExceptionHandler(final AuthorizationFailedException exc, final WebRequest request) {
+        return new ResponseEntity<>(
+                new ErrorResponse().code(exc.getCode()).message(exc.getErrorMessage()), HttpStatus.FORBIDDEN
+        );
+    }
 
     @ExceptionHandler(AuthenticationFailedException.class)
     public ResponseEntity<ErrorResponse> authenticationFailedExceptionHandler(final AuthenticationFailedException exc, final WebRequest request) {

@@ -6,3 +6,20 @@
 /dataSources.local.xml
 # Editor-based HTTP Client requests
 /httpRequests/
+
+.idea/
+
+FoodOrderingApp-api/FoodOrderingApp-api.iml
+
+FoodOrderingApp-db/FoodOrderingApp-db.iml
+
+FoodOrderingApp-service/FoodOrderingApp-service.iml
+
+FoodOrderingAppBackend.iml
+
+FoodOrderingApp-api/target/
+
+FoodOrderingApp-db/target/
+
+FoodOrderingApp-service/target/
+

@@ -70,12 +70,15 @@ public class CustomerController {
             throw new AuthenticationFailedException("ATH-003", "Incorrect format of decoded customer name and password");
         }
         final CustomerAuthTokenEntity customerAuthTokenEntity = utilityService.login(decodedArray[0], decodedArray[1]);
+        final CustomerEntity customerEntity = customerAuthTokenEntity.getCustomer();
 
         final HttpHeaders headers = new HttpHeaders();
         headers.add("access-token", customerAuthTokenEntity.getAccessToken());
 
-        final LoginResponse loginResponse = new LoginResponse();
-        loginResponse.setId(customerAuthTokenEntity.getCustomer().getUuid());
+        final LoginResponse loginResponse = new LoginResponse().id(customerEntity.getUuid()).firstName(customerEntity.getFirstName())
+                .lastName(customerEntity.getLastName()).emailAddress(customerEntity.getEmailAddress())
+                .contactNumber(customerEntity.getContactNumber()).message("SIGNED IN SUCCESSFULLY");
+
         loginResponse.setMessage("LOGGED IN SUCCESSFULLY");
         return new ResponseEntity<LoginResponse>(loginResponse, headers, HttpStatus.OK);
     }

@@ -107,8 +107,10 @@ public class UtilityService {
     }
     // Validate mandatory fields for customer registration
     private boolean validateCustomer(CustomerEntity customer) {
-        if(customer.getEmailAddress().length() == 0 || customer.getContactNumber().length() == 0 ||
-        customer.getFirstName().length() == 0 || customer.getPassword().length() == 0) {
+        if((customer.getEmailAddress() == "" || customer.getEmailAddress() == null) ||
+            (customer.getContactNumber() == "" || customer.getContactNumber() == null) ||
+            (customer.getFirstName() == "" || customer.getFirstName() == null) ||
+            (customer.getPassword() == "" || customer.getPassword() == null)) {
             return false;
         }else {
             return true;

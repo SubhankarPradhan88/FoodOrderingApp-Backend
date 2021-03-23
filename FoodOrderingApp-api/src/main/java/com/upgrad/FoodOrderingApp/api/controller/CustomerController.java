@@ -1,19 +1,21 @@
 package com.upgrad.FoodOrderingApp.api.controller;
 
+import com.upgrad.FoodOrderingApp.api.model.LoginResponse;
 import com.upgrad.FoodOrderingApp.api.model.SignupCustomerRequest;
 import com.upgrad.FoodOrderingApp.api.model.SignupCustomerResponse;
 import com.upgrad.FoodOrderingApp.service.businness.UtilityService;
+import com.upgrad.FoodOrderingApp.service.entity.CustomerAuthTokenEntity;
 import com.upgrad.FoodOrderingApp.service.entity.CustomerEntity;
+import com.upgrad.FoodOrderingApp.service.exception.AuthenticationFailedException;
 import com.upgrad.FoodOrderingApp.service.exception.SignUpRestrictedException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.Base64;
 import java.util.UUID;
 
 @RestController
@@ -45,6 +47,37 @@ public class CustomerController {
         final CustomerEntity createdCustomerEntity = utilityService.signup(customerEntity);
         SignupCustomerResponse customerResponse = new SignupCustomerResponse().id(createdCustomerEntity.getUuid()).status("CUSTOMER SUCCESSFULLY REGISTERED");
         return new ResponseEntity<SignupCustomerResponse>(customerResponse, HttpStatus.CREATED);
+    }
+
+    /**
+     * Request mapping for a user to login.
+     *
+     * @param authorization for the basic authentication
+     * @return Signin response which has userId and access-token in response header.
+     * @throws AuthenticationFailedException : if username or password is invalid
+     */
+    @RequestMapping(method = RequestMethod.POST, path = "/customer/login", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<LoginResponse> login(@RequestHeader("authorization") final String authorization) throws AuthenticationFailedException {
+        final String[] decodedArray;
+        try{
+            final byte[] decode = Base64.getDecoder().decode(authorization.split("Basic ")[1]);
+            final String decodedText = new String(decode);
+            decodedArray = decodedText.split(":");
+            if(decodedArray.length != 2) {
+                throw new Exception();
+            }
+        }catch(Exception e) {
+            throw new AuthenticationFailedException("ATH-003", "Incorrect format of decoded customer name and password");
+        }
+        final CustomerAuthTokenEntity customerAuthTokenEntity = utilityService.login(decodedArray[0], decodedArray[1]);
+
+        final HttpHeaders headers = new HttpHeaders();
+        headers.add("access-token", customerAuthTokenEntity.getAccessToken());
+
+        final LoginResponse loginResponse = new LoginResponse();
+        loginResponse.setId(customerAuthTokenEntity.getCustomer().getUuid());
+        loginResponse.setMessage("LOGGED IN SUCCESSFULLY");
+        return new ResponseEntity<LoginResponse>(loginResponse, headers, HttpStatus.OK);
     }
 }
 

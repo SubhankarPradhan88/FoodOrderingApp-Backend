@@ -37,4 +37,14 @@ public class CustomerDao {
             return null;
         }
     }
+
+    /**
+     * Method to update user in database
+     *
+     * @param updateCustomerEntity : CustomerEntity body
+     * @return updated response
+     */
+    public void updateCustomerEntity(final CustomerEntity updateCustomerEntity) {
+        entityManager.merge(updateCustomerEntity);
+    }
 }

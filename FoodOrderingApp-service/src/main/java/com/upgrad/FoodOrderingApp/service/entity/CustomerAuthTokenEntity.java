@@ -9,6 +9,13 @@ import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.time.ZonedDateTime;
 
+
+@Entity
+@Table(name = "customer_auth")
+@NamedQueries({
+        @NamedQuery(name = "cutomerAuthByAccessToken", query = "select c from CustomerAuthTokenEntity c where c.accessToken=:access_Token")
+})
+
 public class CustomerAuthTokenEntity {
     @Id
     @Column(name = "id")

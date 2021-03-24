@@ -46,6 +46,7 @@ io\swagger\Swagger2SpringBoot.class
 io\swagger\api\ApiOriginFilter.class
 com\upgrad\FoodOrderingApp\api\FoodOrderingAppApiApplication.class
 com\upgrad\FoodOrderingApp\api\model\RestaurantListResponse.class
+com\upgrad\FoodOrderingApp\api\exception\RestExceptionHandler.class
 com\upgrad\FoodOrderingApp\api\model\RestaurantList.class
 com\upgrad\FoodOrderingApp\api\model\UpdateCustomerRequest.class
 com\upgrad\FoodOrderingApp\api\model\OrderListPayment.class

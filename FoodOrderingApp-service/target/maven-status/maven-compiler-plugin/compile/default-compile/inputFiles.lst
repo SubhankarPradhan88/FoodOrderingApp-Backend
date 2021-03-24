@@ -11,6 +11,7 @@ C:\Users\Subhankar\Desktop\FoodOrderingAppBackend-STUB\FoodOrderingAppBackend-ST
 C:\Users\Subhankar\Desktop\FoodOrderingAppBackend-STUB\FoodOrderingAppBackend-STUB\FoodOrderingApp-service\src\main\java\com\upgrad\FoodOrderingApp\service\exception\CustomerNotFoundException.java
 C:\Users\Subhankar\Desktop\FoodOrderingAppBackend-STUB\FoodOrderingAppBackend-STUB\FoodOrderingApp-service\src\main\java\com\upgrad\FoodOrderingApp\service\businness\UtilityService.java
 C:\Users\Subhankar\Desktop\FoodOrderingAppBackend-STUB\FoodOrderingAppBackend-STUB\FoodOrderingApp-service\src\main\java\com\upgrad\FoodOrderingApp\service\dao\CustomerDao.java
+C:\Users\Subhankar\Desktop\FoodOrderingAppBackend-STUB\FoodOrderingAppBackend-STUB\FoodOrderingApp-service\src\main\java\com\upgrad\FoodOrderingApp\service\dao\CustomerAuthDao.java
 C:\Users\Subhankar\Desktop\FoodOrderingAppBackend-STUB\FoodOrderingAppBackend-STUB\FoodOrderingApp-service\src\main\java\com\upgrad\FoodOrderingApp\service\exception\PaymentMethodNotFoundException.java
 C:\Users\Subhankar\Desktop\FoodOrderingAppBackend-STUB\FoodOrderingAppBackend-STUB\FoodOrderingApp-service\src\main\java\com\upgrad\FoodOrderingApp\service\common\ErrorCode.java
 C:\Users\Subhankar\Desktop\FoodOrderingAppBackend-STUB\FoodOrderingAppBackend-STUB\FoodOrderingApp-service\src\main\java\com\upgrad\FoodOrderingApp\service\exception\AuthenticationFailedException.java
@@ -20,5 +21,4 @@ C:\Users\Subhankar\Desktop\FoodOrderingAppBackend-STUB\FoodOrderingAppBackend-ST
 C:\Users\Subhankar\Desktop\FoodOrderingAppBackend-STUB\FoodOrderingAppBackend-STUB\FoodOrderingApp-service\src\main\java\com\upgrad\FoodOrderingApp\service\exception\InvalidRatingException.java
 C:\Users\Subhankar\Desktop\FoodOrderingAppBackend-STUB\FoodOrderingAppBackend-STUB\FoodOrderingApp-service\src\main\java\com\upgrad\FoodOrderingApp\service\exception\SignUpRestrictedException.java
 C:\Users\Subhankar\Desktop\FoodOrderingAppBackend-STUB\FoodOrderingAppBackend-STUB\FoodOrderingApp-service\src\main\java\com\upgrad\FoodOrderingApp\service\common\UnexpectedException.java
-C:\Users\Subhankar\Desktop\FoodOrderingAppBackend-STUB\FoodOrderingAppBackend-STUB\FoodOrderingApp-service\src\main\java\com\upgrad\FoodOrderingApp\service\businness\CustomerService.java
 C:\Users\Subhankar\Desktop\FoodOrderingAppBackend-STUB\FoodOrderingAppBackend-STUB\FoodOrderingApp-service\src\main\java\com\upgrad\FoodOrderingApp\service\businness\JwtTokenProvider.java

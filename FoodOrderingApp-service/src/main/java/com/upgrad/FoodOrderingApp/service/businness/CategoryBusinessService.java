@@ -2,7 +2,9 @@ package com.upgrad.FoodOrderingApp.service.businness;
 
 import com.upgrad.FoodOrderingApp.service.dao.CategoryDao;
 import com.upgrad.FoodOrderingApp.service.entity.CategoryEntity;
+import com.upgrad.FoodOrderingApp.service.entity.RestaurantEntity;
 import com.upgrad.FoodOrderingApp.service.exception.CategoryNotFoundException;
+import com.upgrad.FoodOrderingApp.service.exception.RestaurantNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +14,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
 public class CategoryBusinessService {
 
     @Autowired
@@ -46,8 +47,8 @@ public class CategoryBusinessService {
 
 
     //List all categories mapped to a restaurant - list by restaurant UUID
-    public List<CategoryEntity> getCategoriesByRestaurant(String restaurantUUID) {
-        RestaurantEntity restaurantEntity = restaurantBusinessService.getRestaurantByUUID(restaurantUUID);
+    public List<CategoryEntity> getCategoriesByRestaurant(String restaurantUUID) throws RestaurantNotFoundException {
+        RestaurantEntity restaurantEntity = restaurantBusinessService.getRestaurantByUUId(restaurantUUID);
         return restaurantEntity.getCategories().stream()
                 .sorted(Comparator.comparing(CategoryEntity::getCategoryName))
                 .collect(Collectors.toList());

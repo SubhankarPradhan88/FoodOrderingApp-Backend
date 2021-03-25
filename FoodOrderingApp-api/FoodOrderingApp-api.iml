@@ -19,6 +19,7 @@
         <setting name="validation-enabled" value="true" />
         <setting name="provider-name" value="Hibernate" />
         <datasource-mapping>
+          <factory-entry name="Entities" />
           <factory-entry name="FoodOrderingApp-api" />
           <factory-entry name="entityManagerFactory" />
         </datasource-mapping>
@@ -41,7 +42,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../postgresql-42.2.2.jre6.jar!/" />
+          <root url="jar://C:/postgresql-42.2.2.jre6.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

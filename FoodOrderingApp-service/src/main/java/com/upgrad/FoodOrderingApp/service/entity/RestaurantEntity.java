@@ -18,6 +18,9 @@ import java.util.Set;
 
 @Entity()
 @Table(name = "restaurant")
+@NamedQueries({
+        @NamedQuery(name = "allRestaurants", query = "select r from RestaurantEntity r order by r.customerRating desc"),
+})
 public class RestaurantEntity implements Serializable {
 
     @Id

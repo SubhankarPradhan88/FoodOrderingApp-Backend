@@ -32,13 +32,6 @@ public class RestaurantDao {
         }
     }
 
-//    public List<RestaurantCategoryEntity> getRestaurantByCategoryId(final Long categoryID) {
-//        try {
-//            return entityManager.createNamedQuery("restaurantsByCategoryId", RestaurantCategoryEntity.class).setParameter("id",categoryID).getResultList();
-//        } catch(NoResultException nre) {
-//            return null;
-//        }
-//    }
 
     public RestaurantEntity getRestaurantByUUId(String restaurantUUID) {
         try {
@@ -46,6 +39,10 @@ public class RestaurantDao {
         } catch(NoResultException nre) {
             return null;
         }
+    }
+
+    public RestaurantEntity updateRestaurantEntity(RestaurantEntity restaurantEntity) {
+        return entityManager.merge(restaurantEntity);
     }
 
 }

@@ -4,6 +4,7 @@ import com.upgrad.FoodOrderingApp.api.model.*;
 import com.upgrad.FoodOrderingApp.service.businness.RestaurantBusinessService;
 import com.upgrad.FoodOrderingApp.service.entity.AddressEntity;
 import com.upgrad.FoodOrderingApp.service.entity.CategoryEntity;
+import com.upgrad.FoodOrderingApp.service.entity.CustomerEntity;
 import com.upgrad.FoodOrderingApp.service.entity.RestaurantCategoryEntity;
 import com.upgrad.FoodOrderingApp.service.entity.RestaurantEntity;
 import com.upgrad.FoodOrderingApp.service.exception.AuthorizationFailedException;
@@ -25,7 +26,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
-@CrossOrigin
 @RequestMapping("/")
 public class RestaurantController {
 
@@ -232,6 +232,34 @@ public class RestaurantController {
         RestaurantUpdatedResponse restaurantUpdatedResponse = new RestaurantUpdatedResponse();
 
         return new ResponseEntity<RestaurantUpdatedResponse>(restaurantUpdatedResponse,HttpStatus.OK);
+    }
+
+
+    //Updating restaurant rating by restaurant UUID
+    @CrossOrigin
+    @RequestMapping(method = RequestMethod.PUT, path = "/api/restaurant/{restaurant_id}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<RestaurantUpdatedResponse> updateRestaurantDetails(
+            @RequestParam(name = "customer_rating") final Double customerRating,
+            @PathVariable("restaurant_id") final String restaurantId,
+            @RequestHeader("authorization") final String authorization)
+            throws AuthorizationFailedException, RestaurantNotFoundException, InvalidRatingException
+    {
+
+        String[] bearerToken = authorization.split("Bearer ");
+        CustomerEntity customerEntity = null;
+        if(bearerToken.length==1){
+            throw new AuthorizationFailedException("ATHR-005","Use valid authorization format <Bearer accessToken>");
+        } else {
+            customerEntity = customerService.getCustomer(bearerToken[1]);
+        }
+
+        RestaurantEntity restaurantEntity = restaurantBusinessService.getRestaurantByUUId(restaurantId);
+        restaurantBusinessService.updateRestaurantRating(restaurantEntity, customerRating);
+
+        RestaurantUpdatedResponse restaurantUpdatedResponse = new RestaurantUpdatedResponse()
+                .id(UUID.fromString(restaurantId))
+                .status("RESTAURANT RATING UPDATED SUCCESSFULLY");
+        return new ResponseEntity<RestaurantUpdatedResponse>(restaurantUpdatedResponse, HttpStatus.OK);
     }
 
 }

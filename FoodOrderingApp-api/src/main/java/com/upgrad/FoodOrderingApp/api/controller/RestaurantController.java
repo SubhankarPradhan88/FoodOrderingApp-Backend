@@ -83,8 +83,48 @@ public class RestaurantController {
     public ResponseEntity<RestaurantListResponse> getRestaurantByName(@PathVariable(
             "restaurant_name") final String restaurantName) throws RestaurantNotFoundException {
 
+        // Getting the list of all restaurants with help of restaurant business service based on input restaurant name
+        final List<RestaurantEntity> allRestaurants = restaurantBusinessService.getRestaurantsByName(restaurantName);
+
         RestaurantListResponse restaurantListResponse = new RestaurantListResponse();
 
+        // Adding the list of restaurants to RestaurantList
+        List<RestaurantList> restaurantLists = new ArrayList<RestaurantList>();
+
+        for (RestaurantEntity n: allRestaurants) {
+            RestaurantList restaurant = new RestaurantList();
+            restaurant.setId(UUID.fromString(n.getUuid()));
+            restaurant.setRestaurantName(n.getRestaurantName());
+            restaurant.setPhotoURL(n.getPhotoUrl());
+            restaurant.setCustomerRating(n.getCustomerRating());
+            restaurant.setAveragePrice(n.getAvgPriceForTwo());
+            restaurant.setNumberCustomersRated(n.getNumCustomersRated());
+
+        /*    // Getting address of restaurant from address entity
+            // Getting state for current address from state entity
+            // Setting address with state into restaurant obj*/
+
+
+            // Looping categories and setting name values only
+            List<String> categoryLists = new ArrayList();
+            for (CategoryEntity categoryEntity :n.getCategoryEntities()) {
+                categoryLists.add(categoryEntity.getCategoryName());
+            }
+
+            // Sorting category list on name
+            Collections.sort(categoryLists);
+
+            // Joining List items as string with comma(,)
+            restaurant.setCategories(String.join(",", categoryLists));
+
+            // Add category restaurant to restaurantLists(RestaurantList)
+            //restaurantLists.add(restaurant);
+
+            restaurantListResponse.addRestaurantsItem(restaurant);
+
+        }
+
+        // return response entity with RestaurantLists(restaurantLists) and Http status
         return new ResponseEntity<RestaurantListResponse>(restaurantListResponse, HttpStatus.OK);
     }
 

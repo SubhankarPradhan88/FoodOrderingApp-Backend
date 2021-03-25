@@ -36,4 +36,9 @@ public class RestaurantBusinessService {
         return restaurantDao.getRestaurantByCategoryId(categoryID);
     }
 
+    public RestaurantEntity getRestaurantByUUId(String restaurantUUID) {
+        return restaurantDao.getRestaurantByUUId(restaurantUUID);
+    }
+
+
 }

@@ -210,9 +210,77 @@ public class RestaurantController {
     public ResponseEntity<RestaurantDetailsResponse> getRestaurantByRestaurantID(@PathVariable(
             "restaurant_id") final String restaurantID) throws RestaurantNotFoundException {
 
-        RestaurantDetailsResponse restaurantDetailsResponse = new RestaurantDetailsResponse();
+        // Throw exception if path variable(restaurant_id) is empty
+        if(restaurantID == null || restaurantID.isEmpty() || restaurantID.equalsIgnoreCase("\"\"")){
+            throw new RestaurantNotFoundException("RNF-002", "Restaurant id field should not be empty");
+        }
 
-        return new ResponseEntity<RestaurantDetailsResponse>(restaurantDetailsResponse, HttpStatus.OK);
+        // Getting restaurant which matched with given restaurant_id with help of restaurant business service
+        final RestaurantEntity restaurant = restaurantBusinessService.getRestaurantByUUId(restaurantID);
+
+        // Throw exception if given restaurant_id not matched with any restaurant in DB
+        if(restaurant == null){
+            throw new RestaurantNotFoundException("RNF-001", "No restaurant by this id");
+        }
+
+        // Adding the list of restaurant details to RestaurantDetailsResponse
+        RestaurantDetailsResponse details = new RestaurantDetailsResponse();
+        details.setId(UUID.fromString(restaurant.getUuid()));
+        details.setRestaurantName(restaurant.getRestaurantName());
+        details.setPhotoURL(restaurant.getPhotoUrl());
+        details.setCustomerRating(restaurant.getCustomerRating());
+        details.setAveragePrice(restaurant.getAvgPriceForTwo());
+        details.setNumberCustomersRated(restaurant.getNumCustomersRated());
+
+        // Getting address of restaurant from address entity
+        AddressEntity addressEntity = addressService.getAddressById(restaurant.getAddress().getId());
+        RestaurantDetailsResponseAddress responseAddress = new RestaurantDetailsResponseAddress();
+
+        responseAddress.setId(UUID.fromString(addressEntity.getUuid()));
+        responseAddress.setFlatBuildingName(addressEntity.getFlatBuildingNumber());
+        responseAddress.setLocality(addressEntity.getLocality());
+        responseAddress.setCity(addressEntity.getCity());
+        responseAddress.setPincode(addressEntity.getPincode());
+
+        // Setting address with state into restaurant obj
+        StateEntity stateEntity = stateBusinessService.getStateById(addressEntity.getState().getId());
+        RestaurantDetailsResponseAddressState responseAddressState = new RestaurantDetailsResponseAddressState();
+
+        responseAddressState.setId(UUID.fromString(stateEntity.getUuid()));
+        responseAddressState.setStateName(stateEntity.getStateName());
+        responseAddress.setState(responseAddressState);
+
+        // Setting address with state into restaurant obj
+        details.setAddress(responseAddress);
+
+        // Looping categories and setting  values
+        List<CategoryList> categoryLists = new ArrayList();
+        for (CategoryEntity categoryEntity :restaurant.getCategoryEntities()) {
+            CategoryList categoryListDetail = new CategoryList();
+            categoryListDetail.setId(UUID.fromString(categoryEntity.getUuid()));
+            categoryListDetail.setCategoryName(categoryEntity.getCategoryName());
+
+            // Looping items and setting to category
+            List<ItemList> itemLists = new ArrayList();
+            for (ItemEntity itemEntity :categoryEntity.getItemEntities()) {
+                ItemList itemDetail = new ItemList();
+                itemDetail.setId(UUID.fromString(itemEntity.getUuid()));
+                itemDetail.setItemName(itemEntity.getItemName());
+                itemDetail.setPrice(itemEntity.getPrice());
+                itemDetail.setItemType(itemEntity.getType());
+                itemLists.add(itemDetail);
+            }
+            categoryListDetail.setItemList(itemLists);
+
+            // Adding category to category list
+            categoryLists.add(categoryListDetail);
+        }
+
+        // Add category detail to details(Restaurant)
+        details.setCategories(categoryLists);
+
+        // return response entity with RestaurantDetails(details) and Http status
+        return new ResponseEntity<>(details, HttpStatus.OK);
     }
 
 

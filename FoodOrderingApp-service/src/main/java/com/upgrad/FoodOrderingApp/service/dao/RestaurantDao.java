@@ -22,4 +22,13 @@ public class RestaurantDao {
         }
     }
 
+
+    public List<RestaurantEntity> getRestaurantsByName(String restaurantName) {
+        try {
+            return entityManager.createNamedQuery("findByName", RestaurantEntity.class).setParameter("restaurantName","%" + restaurantName.toLowerCase() + "%" ).getResultList();
+        } catch(NoResultException nre) {
+            return null;
+        }
+    }
+
 }

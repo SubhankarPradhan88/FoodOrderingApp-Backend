@@ -2,6 +2,7 @@ package com.upgrad.FoodOrderingApp.api.controller;
 
 
 import com.upgrad.FoodOrderingApp.api.model.CategoryDetailsResponse;
+import com.upgrad.FoodOrderingApp.api.model.CategoryListResponse;
 import com.upgrad.FoodOrderingApp.api.model.ItemList;
 import com.upgrad.FoodOrderingApp.service.businness.CategoryBusinessService;
 import com.upgrad.FoodOrderingApp.service.entity.CategoryEntity;
@@ -60,5 +61,26 @@ public class CategoryController {
 
         // return response entity with categoryDetails(details) and Http status
         return new ResponseEntity<>(categoryDetails, HttpStatus.OK);
+    }
+
+
+
+    @RequestMapping(method = RequestMethod.GET, path = "/category", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity getAllCategories() {
+
+        // Getting the list of all categories with help of category business service
+        final List<CategoryEntity> allCategories = categoryBusinessService.getAllCategories();
+
+        // Adding the list of categories to categoriesList
+        List<CategoryListResponse> categoriesList = new ArrayList<>();
+        for (CategoryEntity n: allCategories) {
+            CategoryListResponse categoryDetail = new CategoryListResponse();
+            categoryDetail.setCategoryName(n.getCategoryName());
+            categoryDetail.setId(UUID.fromString(n.getUuid()));
+            categoriesList.add(categoryDetail);
+        }
+
+        // return response entity with CategoriesList(details) and Http status
+        return new ResponseEntity<>(categoriesList, HttpStatus.OK);
     }
 }

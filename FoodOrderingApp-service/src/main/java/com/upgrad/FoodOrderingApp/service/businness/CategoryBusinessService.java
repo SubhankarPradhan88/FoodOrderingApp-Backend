@@ -17,6 +17,12 @@ public class CategoryBusinessService {
     private CategoryDao categoryDao;
 
 
+
+    // A Method which is for  getAllCategories endpoint
+    public List<CategoryEntity> getAllCategories(){
+        return  categoryDao.getAllCategories();
+    }
+
     // A Method which takes the categoryUUId as parameter for  getCategoryEntityByUUId endpoint
     public CategoryEntity getCategoryEntityByUuid(final String categoryUUId) throws CategoryNotFoundException {
 

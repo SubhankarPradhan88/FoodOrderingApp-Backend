@@ -64,4 +64,20 @@ public class CustomerDao {
             return null;
         }
     }
+
+    //To get Customer By Uuid if no results return null
+    public CustomerEntity getCustomerByUuid (final String uuid){
+        try {
+            CustomerEntity customer = entityManager.createNamedQuery("customerByUuid",CustomerEntity.class).setParameter("uuid",uuid).getSingleResult();
+            return customer;
+        }catch (NoResultException nre){
+            return null;
+        }
+    }
+
+    //To update customer
+    public CustomerEntity updateCustomer(CustomerEntity customerToBeUpdated){
+        entityManager.merge(customerToBeUpdated);
+        return customerToBeUpdated;
+    }
 }

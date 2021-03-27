@@ -13,7 +13,7 @@ public class RestaurantDao {
     @PersistenceContext
     private EntityManager entityManager;
 
-
+    //Return restaurant list sorted based on customer rating
     public List<RestaurantEntity> getAllRestaurants() {
         try {
             return entityManager.createNamedQuery("allRestaurants", RestaurantEntity.class).getResultList();
@@ -22,7 +22,7 @@ public class RestaurantDao {
         }
     }
 
-
+    //Return restaurant list based out of name
     public List<RestaurantEntity> getRestaurantsByName(String restaurantName) {
         try {
             return entityManager.createNamedQuery("findByName", RestaurantEntity.class).setParameter("restaurantName","%" + restaurantName.toLowerCase() + "%" ).getResultList();
@@ -31,7 +31,7 @@ public class RestaurantDao {
         }
     }
 
-
+    //Return restaurant details by restaurant UUID
     public RestaurantEntity getRestaurantByUUId(String restaurantUUID) {
         try {
             return entityManager.createNamedQuery("findRestaurantByUUId", RestaurantEntity.class).setParameter("restaurantUUID",restaurantUUID.toLowerCase()).getSingleResult();
@@ -39,7 +39,7 @@ public class RestaurantDao {
             return null;
         }
     }
-
+    //Update modifying restaurant details in DB
     public RestaurantEntity updateRestaurantEntity(RestaurantEntity restaurantEntity) {
         return entityManager.merge(restaurantEntity);
     }

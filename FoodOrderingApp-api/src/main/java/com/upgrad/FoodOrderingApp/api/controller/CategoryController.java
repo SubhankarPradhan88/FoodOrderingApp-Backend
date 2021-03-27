@@ -26,9 +26,14 @@ public class CategoryController {
     @Autowired
     private CategoryBusinessService categoryBusinessService;
 
-
+    /**
+     * endpoint to get the category by ID
+     * @param category_id
+     * @return the list of restaurants with the provided category id
+     * @throws CategoryNotFoundException
+     */
     @RequestMapping(method = RequestMethod.GET, path = "/category/{category_id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity getCategoryById(@PathVariable String category_id) throws CategoryNotFoundException {
+    public ResponseEntity<CategoryDetailsResponse> getCategoryById(@PathVariable String category_id) throws CategoryNotFoundException {
 
         CategoryEntity categoryEntity = categoryBusinessService.getCategoryEntityByUuid(category_id.toLowerCase());
 
@@ -49,7 +54,10 @@ public class CategoryController {
     }
 
 
-
+    /**
+     *
+     * @return the  list of all categories from the DB
+     */
     @RequestMapping(method = RequestMethod.GET, path = "/category", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity getAllCategories() {
 

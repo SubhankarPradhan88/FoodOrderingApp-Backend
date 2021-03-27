@@ -23,11 +23,13 @@ public class RestaurantBusinessService {
     @Autowired
     private CategoryBusinessService categoryBusinessService;
 
+
+    //List all restaurants sorted by rating - Descending order
     public List<RestaurantEntity> getAllRestaurants(){
         return this.restaurantDao.getAllRestaurants();
     }
 
-
+    //List restaurant details by restaurant name
     public List<RestaurantEntity> getRestaurantsByName(String restaurantName) throws RestaurantNotFoundException {
 
         // Throw exception if path variable(restaurant_name) is empty
@@ -37,7 +39,7 @@ public class RestaurantBusinessService {
         return restaurantDao.getRestaurantsByName(restaurantName);
     }
 
-
+    //List restaurants belonging to certain category
     public List<RestaurantEntity> getRestaurantByCategoryId(final String categoryId) throws CategoryNotFoundException {
 
         if (categoryId.equals("")) {
@@ -55,7 +57,7 @@ public class RestaurantBusinessService {
         return restaurantEntityList;
     }
 
-
+    //Display restaurant details by restaurant UUID
     public RestaurantEntity getRestaurantByUUId(String restaurantUUID) throws RestaurantNotFoundException {
 
         if (restaurantUUID.equals("")) {
@@ -70,7 +72,7 @@ public class RestaurantBusinessService {
         return restaurantEntity;
     }
 
-
+    //Updating restaurant rating
     @Transactional(propagation = Propagation.REQUIRED)
     public RestaurantEntity updateRestaurantRating(RestaurantEntity restaurantEntity, Double newRating) throws InvalidRatingException {
 

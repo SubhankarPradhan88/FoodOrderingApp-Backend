@@ -26,7 +26,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
-@CrossOrigin
 @RequestMapping("/")
 public class RestaurantController {
 
@@ -40,6 +39,11 @@ public class RestaurantController {
     @Autowired
     private CustomerService customerService;
 
+    /**
+     *
+     * @return List of all restaurants in the database
+     * @throws RestaurantNotFoundException
+     */
     @RequestMapping(method = RequestMethod.GET, path = "/restaurant", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<RestaurantListResponse> getAllRestaurants() throws RestaurantNotFoundException {
 
@@ -81,7 +85,12 @@ public class RestaurantController {
     }
 
 
-
+    /**
+     *
+     * @param restaurantName
+     * @return List of all restaurants in the database
+     * @throws RestaurantNotFoundException  - when restaurant name field is empty
+     */
     @RequestMapping(method = RequestMethod.GET, path = "/restaurant/name/{restaurant_name}", produces =
             MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<RestaurantListResponse> getRestaurantByName(@PathVariable(
@@ -131,6 +140,13 @@ public class RestaurantController {
     }
 
 
+    /**
+     *
+     * @param categoryID
+     * @return List of all restaurants having given category id
+     * @throws CategoryNotFoundException - When Given category id  field is empty
+     * @throws RestaurantNotFoundException - When given restaurant id field is empty
+     */
     @RequestMapping(method = RequestMethod.GET, path = "/restaurant/category/{category_id}", produces =
             MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<RestaurantListResponse> getRestaurantByCategoryID(@PathVariable(
@@ -174,6 +190,12 @@ public class RestaurantController {
     }
 
 
+    /**
+     *
+     * @param restaurantID
+     * @return Restaurant with details based on given restaurant id
+     * @throws RestaurantNotFoundException - When given restaurant id field is empty
+     */
     @RequestMapping(method = RequestMethod.GET, path = "/api/restaurant/{restaurant_id}", produces =
             MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<RestaurantDetailsResponse> getRestaurantByRestaurantID(@PathVariable(
@@ -225,21 +247,16 @@ public class RestaurantController {
     }
 
 
-    @RequestMapping(method = RequestMethod.PUT, path = "/api/restaurant/{restaurant_id}", produces =
-            MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<RestaurantUpdatedResponse> updateRestaurantByRestaurantID(
-            @RequestHeader("authorization") final String authorization,
-            @PathVariable("restaurant_id") final String restaurantID,
-            @RequestParam("customer_rating") final Double customerRating)
-            throws AuthorizationFailedException, RestaurantNotFoundException, InvalidRatingException {
-
-        RestaurantUpdatedResponse restaurantUpdatedResponse = new RestaurantUpdatedResponse();
-
-        return new ResponseEntity<RestaurantUpdatedResponse>(restaurantUpdatedResponse,HttpStatus.OK);
-    }
-
-
-    //Updating restaurant rating by restaurant UUID
+     /**
+     *
+     * @param authorization
+     * @param restaurantId
+     * @param customerRating
+     * @return Restaurant uuid of the rating updated restaurant
+     * @throws AuthorizationFailedException  - When customer is not logged in or logged out or login expired
+     * @throws RestaurantNotFoundException  - When given restaurant id field is empty
+     * @throws InvalidRatingException - When the Rating value provided is invalid
+     */
     @CrossOrigin
     @RequestMapping(method = RequestMethod.PUT, path = "/api/restaurant/{restaurant_id}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<RestaurantUpdatedResponse> updateRestaurantDetails(

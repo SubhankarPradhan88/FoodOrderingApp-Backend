@@ -13,8 +13,9 @@ import java.io.Serializable;
 @Table(name = "customer")
 @NamedQueries(
         {
-            @NamedQuery(name = "customerByContactNumber", query = "select c from CustomerEntity c where c.contactNumber =:contact_number"),
-            @NamedQuery(name = "customerByFirstname", query = "select c from CustomerEntity c where c.firstname =:firstname")
+                @NamedQuery(name = "customerByContactNumber", query = "select c from CustomerEntity c where c.contactNumber =:contact_number"),
+                @NamedQuery(name = "customerByFirstname", query = "select c from CustomerEntity c where c.firstname =:firstname"),
+                @NamedQuery(name = "customerByUuid", query = "select c from CustomerEntity c where c.uuid  =:uuid")
         }
 )
 
@@ -88,7 +89,7 @@ public class CustomerEntity implements Serializable {
 
     public String getFirstName() { return firstname; }
 
-    public void setFirstname(String firstname) {
+    public void setFirstName(String firstname) {
         this.firstname = firstname;
     }
 

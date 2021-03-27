@@ -7,6 +7,7 @@ import com.upgrad.FoodOrderingApp.service.entity.CustomerEntity;
 import com.upgrad.FoodOrderingApp.service.exception.AuthenticationFailedException;
 import com.upgrad.FoodOrderingApp.service.exception.AuthorizationFailedException;
 import com.upgrad.FoodOrderingApp.service.exception.SignUpRestrictedException;
+import com.upgrad.FoodOrderingApp.service.exception.UpdateCustomerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -100,9 +101,9 @@ public class UtilityService {
     /**
      * The signout method
      *
-     * @param accessToken : required to signout the user
+     * @param accessToken : required to logout the user
      * @throws AuthorizationFailedException : if the access-token is not found in the DB.
-     * @return UserEntity : that user is signed out.
+     * @return CustomerEntity : the customer who has been logged out.
      */
 
     @Transactional(propagation = Propagation.REQUIRED)
@@ -121,6 +122,95 @@ public class UtilityService {
         }
     }
 
+    /**
+     * The updateCustomerPassword method
+     *
+     * @param accessToken : required to signout the user
+     * @throws UpdateCustomerException : if the access-token is not found in the DB.
+     * @return CustomerEntity : the customer whose account password has been updated.
+     */
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public CustomerEntity updateCustomerPassword(String oldPassword, String newPassword, String accessToken)
+            throws UpdateCustomerException, AuthorizationFailedException {
+        CustomerAuthTokenEntity customerAuthTokenEntity = customerDao.getCustomerAuthToken(accessToken);
+        if(oldPassword.length()==0 || newPassword.length()==0) {
+            throw new UpdateCustomerException("UCR-003", "No field should be empty");
+        }
+        if(customerAuthTokenEntity == null) {
+            throw new AuthorizationFailedException("ATHR-001", "Customer is not Logged in.");
+        }
+        if(customerAuthTokenEntity != null && customerAuthTokenEntity.getLogoutAt() != null) {
+            throw new AuthorizationFailedException("ATHR-002", "Customer is logged out. Log in again to access this endpoint.");
+        }
+        if(customerAuthTokenEntity != null && customerAuthTokenEntity.getExpiresAt().isBefore(ZonedDateTime.now())) {
+            throw new AuthorizationFailedException("ATHR-003", "Your session is expired. Log in again to access this endpoint.");
+        }
+        if(!isValidPassword(newPassword)) {
+            throw new UpdateCustomerException("UCR-001", "Weak password!");
+        }
+        CustomerEntity existingRecord = customerAuthTokenEntity.getCustomer();
+        final String encryptedOldPassword = cryptographyProvider.encrypt(oldPassword, existingRecord.getSalt());
+        if(!encryptedOldPassword.equals(existingRecord.getPassword())) {
+            throw new UpdateCustomerException("UCR-004", "Incorrect old password!");
+        }
+        final String encryptedNewPassword = cryptographyProvider.encrypt(newPassword, existingRecord.getSalt());
+        existingRecord.setPassword(encryptedNewPassword);
+        customerDao.updateCustomerDetails(existingRecord);
+        return existingRecord;
+    }
+
+    /**
+     * The getCustomer method
+     *
+     * @param accessToken : required to signout the user
+     * @throws AuthorizationFailedException : if the access-token is not found in the DB.
+     * @return CustomerEntity : the selected customer current details in the DB
+     */
+
+    public CustomerEntity getCustomer(String accessToken) throws AuthorizationFailedException {
+        CustomerAuthTokenEntity customerAuthTokenEntity = customerDao.getCustomerAuthToken(accessToken);
+        //  Checking if Customer not logged In
+        if(customerAuthTokenEntity == null) {
+            throw new AuthorizationFailedException("ATHR-001", "Customer is not Logged in.");
+        }
+        //  Checking if customer is logged Out
+        if(customerAuthTokenEntity.getLogoutAt() != null) {
+            throw new AuthorizationFailedException("ATHR-002", "Customer is logged out. Log in again to access this endpoint.");
+        }
+
+        final ZonedDateTime now = ZonedDateTime.now();
+        //  Checking accessToken is Expired
+        if(customerAuthTokenEntity.getExpiresAt().compareTo(now) <= 0) {
+            throw new AuthorizationFailedException("ATHR-003", "Your session is expired. Log in again to access this endpoint.");
+        }
+        return customerAuthTokenEntity.getCustomer();
+    }
+
+    /**
+     * The updateCustomer method
+     *
+     * @param customerEntity : selected customer whose details will be updated
+     * @throws UpdateCustomerException : if the customer is not found in the DB.
+     * @return CustomerEntity : update the selected customer current details and persist in the DB
+     */
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public CustomerEntity updateCustomer(CustomerEntity customerEntity) throws UpdateCustomerException {
+
+        //  Getting the CustomerEntity by getCustomerByUuid of customerDao
+        CustomerEntity customerToBeUpdated = customerDao.getCustomerByUuid(customerEntity.getUuid());
+
+        //  Setting the new details to the customer entity .
+        customerToBeUpdated.setFirstName(customerEntity.getFirstName());
+        customerToBeUpdated.setLastName(customerEntity.getLastName());
+
+        //  Calls updateCustomer of customerDao to update the customer data in the DB
+        CustomerEntity updatedCustomer = customerDao.updateCustomer(customerEntity);
+
+        return updatedCustomer;
+    }
+
     // To check if the username exist in the database
     private boolean isContactNumberInUse(CustomerEntity customer) {
         CustomerEntity customerEntity = customerDao.getCustomerByContactNumber(customer.getContactNumber());
@@ -133,9 +223,9 @@ public class UtilityService {
     // Validate mandatory fields for customer registration
     private boolean validateCustomer(CustomerEntity customer) {
         if((customer.getEmailAddress() == "" || customer.getEmailAddress() == null) ||
-            (customer.getContactNumber() == "" || customer.getContactNumber() == null) ||
-            (customer.getFirstName() == "" || customer.getFirstName() == null) ||
-            (customer.getPassword() == "" || customer.getPassword() == null)) {
+                (customer.getContactNumber() == "" || customer.getContactNumber() == null) ||
+                (customer.getFirstName() == "" || customer.getFirstName() == null) ||
+                (customer.getPassword() == "" || customer.getPassword() == null)) {
             return false;
         }else {
             return true;

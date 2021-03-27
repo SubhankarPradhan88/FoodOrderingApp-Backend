@@ -1,6 +1,7 @@
 package com.upgrad.FoodOrderingApp.service.dao;
 
 
+import com.upgrad.FoodOrderingApp.service.entity.CustomerAuthTokenEntity;
 import com.upgrad.FoodOrderingApp.service.entity.CustomerEntity;
 import org.springframework.stereotype.Repository;
 
@@ -33,7 +34,7 @@ public class CustomerDao {
     public CustomerEntity getCustomerByContactNumber(final String contactNumber) {
         try{
             return entityManager.createNamedQuery("customerByContactNumber", CustomerEntity.class).setParameter("contact_number", contactNumber).getSingleResult();
-        }catch (NoResultException nre) {
+        }catch(NoResultException nre) {
             return null;
         }
     }
@@ -46,5 +47,37 @@ public class CustomerDao {
      */
     public void updateCustomerEntity(final CustomerEntity updateCustomerEntity) {
         entityManager.merge(updateCustomerEntity);
+    }
+
+    public CustomerAuthTokenEntity getCustomerAuthToken(final String accessToken) {
+        try{
+            return entityManager.createNamedQuery("cutomerAuthByAccessToken", CustomerAuthTokenEntity.class).setParameter("access_token", accessToken).getSingleResult();
+        }catch (NoResultException nre) {
+            return null;
+        }
+    }
+
+    public CustomerEntity updateCustomerDetails(CustomerEntity customer) {
+        try{
+            return entityManager.merge(customer);
+        }catch (NoResultException nre) {
+            return null;
+        }
+    }
+
+    //To get Customer By Uuid if no results return null
+    public CustomerEntity getCustomerByUuid (final String uuid){
+        try {
+            CustomerEntity customer = entityManager.createNamedQuery("customerByUuid",CustomerEntity.class).setParameter("uuid",uuid).getSingleResult();
+            return customer;
+        }catch (NoResultException nre){
+            return null;
+        }
+    }
+
+    //To update customer
+    public CustomerEntity updateCustomer(CustomerEntity customerToBeUpdated){
+        entityManager.merge(customerToBeUpdated);
+        return customerToBeUpdated;
     }
 }

@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Comparator;
 import java.util.List;
 
@@ -88,7 +89,7 @@ public class RestaurantService {
                 ((restaurantEntity.getNumberCustomersRated() * restaurantEntity.getCustomerRating()) + newRating) /
                         (restaurantEntity.getNumberCustomersRated() + 1));
         restaurantEntity.setNumberCustomersRated(restaurantEntity.getNumberCustomersRated() + 1);
-        newAverageRating = BigDecimal.valueOf(newAverageRating).setScale(2).doubleValue();
+        newAverageRating = BigDecimal.valueOf(newAverageRating).setScale(2, RoundingMode.HALF_UP).doubleValue();
         restaurantEntity.setCustomerRating(newAverageRating);
         return restaurantDao.updateRestaurantEntity(restaurantEntity);
     }

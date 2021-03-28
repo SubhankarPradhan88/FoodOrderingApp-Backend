@@ -143,14 +143,9 @@ public class CustomerEntity implements Serializable {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
     }
 
-//    @OneToMany(mappedBy = "customer")
-//    private Collection<CustomerAuthTokenEntity> customerAuthTokenEntity;
-//
-//    public Collection<CustomerAuthTokenEntity> getCustomerAuthTokenEntity() {
-//        return customerAuthTokenEntity;
-//    }
-//
-//    public void setCustomerAuthTokenEntity(Collection<CustomerAuthTokenEntity> customerAuthTokenEntity) {
-//        this.customerAuthTokenEntity = customerAuthTokenEntity;
-//    }
+    @OneToMany(mappedBy = "customer", fetch = FetchType.EAGER)
+    private List<AddressEntity> addresses;
+        public List<AddressEntity> getAddresses() {
+            return addresses;
+        }
 }

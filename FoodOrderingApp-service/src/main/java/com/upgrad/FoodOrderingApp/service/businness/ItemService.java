@@ -20,7 +20,7 @@ public class ItemService {
     RestaurantDao restaurantDao;
 
     @Autowired
-    RestaurantService restaurantService;
+    RestaurantItemDao restaurantItemDao;
 
     @Autowired
     CategoryItemDao categoryItemDao;
@@ -49,21 +49,21 @@ public class ItemService {
         CategoryEntity categoryEntity = categoryDao.getCategoryByUUId(categoryUuid);
 
         //Calls getItemsByRestaurant of restaurantItemDao to get the  list of RestaurantItemEntity
-//        List<RestaurantEntity> restaurantItemEntities = restaurantItemDao.getItemsByRestaurant(restaurantEntity);
-//
-//        //Calls getItemsByCategory of categoryItemDao to get the  list of CategoryItemEntity
-//        List<CategoryItemEntity> categoryItemEntities = categoryItemDao.getItemsByCategory(categoryEntity);
-//
-//        //Creating list of item entity common to the restaurant and category.
+        List<RestaurantItemEntity> restaurantItemEntities = restaurantItemDao.getItemsByRestaurant(restaurantEntity);
+
+        //Calls getItemsByCategory of categoryItemDao to get the  list of CategoryItemEntity
+        List<CategoryItemEntity> categoryItemEntities = categoryItemDao.getItemsByCategory(categoryEntity);
+
+        //Creating list of item entity common to the restaurant and category.
         List<ItemEntity> itemEntities = new LinkedList<>();
-//
-//        restaurantItemEntities.forEach(restaurantItemEntity -> {
-//            categoryItemEntities.forEach(categoryItemEntity -> {
-//                if(restaurantItemEntity.getItem().equals(categoryItemEntity.getItem())){
-//                    itemEntities.add(restaurantItemEntity.getItem());
-//                }
-//            });
-//        });
+
+        restaurantItemEntities.forEach(restaurantItemEntity -> {
+            categoryItemEntities.forEach(categoryItemEntity -> {
+                if(restaurantItemEntity.getItem().equals(categoryItemEntity.getItem())){
+                    itemEntities.add(restaurantItemEntity.getItem());
+                }
+            });
+        });
 
         return itemEntities;
     }
@@ -97,7 +97,6 @@ public class ItemService {
 
         //Calls sortMapByValues method of uitilityProvider and get sorted map by value.
         Map<String,Integer> sortedItemCountMap = utilityProvider.sortMapByValues(itemCountMap);
-        
 
         //Creating the top 5 Itementity list
         List<ItemEntity> sortedItemEntites = new LinkedList<>();

@@ -1,7 +1,7 @@
 package com.upgrad.FoodOrderingApp.service.dao;
 
 import com.upgrad.FoodOrderingApp.service.common.UnexpectedException;
-import com.upgrad.FoodOrderingApp.service.entity.CustomerAuthTokenEntity;
+import com.upgrad.FoodOrderingApp.service.entity.CustomerAuthEntity;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
 
@@ -22,10 +22,10 @@ public class CustomerAuthDao {
      * @param accessToken : access token to authenticate
      * @return single user auth details
      */
-    public CustomerAuthTokenEntity getCustomer(final String accessToken) {
+    public CustomerAuthEntity getCustomer(final String accessToken) {
         try {
             return entityManager
-                    .createNamedQuery("cutomerAuthByAccessToken", CustomerAuthTokenEntity.class).setParameter("access_token", accessToken).getSingleResult();
+                    .createNamedQuery("cutomerAuthByAccessToken", CustomerAuthEntity.class).setParameter("access_token", accessToken).getSingleResult();
         }catch (NoResultException nre) {
             return null;
         }
@@ -34,19 +34,19 @@ public class CustomerAuthDao {
     /**
      * Persists customer auth entity in database.
      *
-     * @param customerAuthTokenEntity to be persisted in the DB.
+     * @param customerAuthEntity to be persisted in the DB.
      * @return UserAuthEntity
      */
-    public CustomerAuthTokenEntity createAuthToken(final CustomerAuthTokenEntity customerAuthTokenEntity) {
-        entityManager.persist(customerAuthTokenEntity);
-        return customerAuthTokenEntity;
+    public CustomerAuthEntity createAuthToken(final CustomerAuthEntity customerAuthEntity) {
+        entityManager.persist(customerAuthEntity);
+        return customerAuthEntity;
     }
     /**
      * Update UserAuthEntity in Database
      *
      * @param updatedUserAuthEntity: CustomerAuthTokenEntity object
      */
-    public void updateCustomerAuth(final CustomerAuthTokenEntity updatedUserAuthEntity) {
+    public void updateCustomerAuth(final CustomerAuthEntity updatedUserAuthEntity) {
         entityManager.merge(updatedUserAuthEntity);
     }
 

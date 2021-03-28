@@ -2,7 +2,7 @@ package com.upgrad.FoodOrderingApp.service.businness;
 
 import com.upgrad.FoodOrderingApp.service.dao.CustomerAuthDao;
 import com.upgrad.FoodOrderingApp.service.dao.CustomerDao;
-import com.upgrad.FoodOrderingApp.service.entity.CustomerAuthTokenEntity;
+import com.upgrad.FoodOrderingApp.service.entity.CustomerAuthEntity;
 import com.upgrad.FoodOrderingApp.service.entity.CustomerEntity;
 import com.upgrad.FoodOrderingApp.service.exception.AuthenticationFailedException;
 import com.upgrad.FoodOrderingApp.service.exception.AuthorizationFailedException;
@@ -58,7 +58,7 @@ public class UtilityService {
         customerEntity.setSalt(encryptedText[0]);
         customerEntity.setPassword(encryptedText[1]);
 
-        return customerDao.createCustomer(customerEntity);
+        return customerDao.saveCustomer(customerEntity);
     }
 
     /**
@@ -71,7 +71,7 @@ public class UtilityService {
      */
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public CustomerAuthTokenEntity login(final String contactNumber, final String password) throws AuthenticationFailedException {
+    public CustomerAuthEntity login(final String contactNumber, final String password) throws AuthenticationFailedException {
         final CustomerEntity customerEntity = customerDao.getCustomerByContactNumber(contactNumber);
 
         if(customerEntity == null) {
@@ -84,18 +84,18 @@ public class UtilityService {
             throw new AuthenticationFailedException("ATH-002", "Password failed");
         }
         final JwtTokenProvider jwtTokenProvider = new JwtTokenProvider(encryptedPassword);
-        final CustomerAuthTokenEntity customerAuthTokenEntity = new CustomerAuthTokenEntity();
-        customerAuthTokenEntity.setUuid(UUID.randomUUID().toString());
-        customerAuthTokenEntity.setCustomer(customerEntity);
+        final CustomerAuthEntity customerAuthEntity = new CustomerAuthEntity();
+        customerAuthEntity.setUuid(UUID.randomUUID().toString());
+        customerAuthEntity.setCustomer(customerEntity);
         final ZonedDateTime now = ZonedDateTime.now();
         final ZonedDateTime expiresAt = now.plusHours(8);
-        customerAuthTokenEntity.setAccessToken(jwtTokenProvider.generateToken(customerEntity.getUuid(), now, expiresAt));
-        customerAuthTokenEntity.setLoginAt(now);
-        customerAuthTokenEntity.setExpiresAt(expiresAt);
+        customerAuthEntity.setAccessToken(jwtTokenProvider.generateToken(customerEntity.getUuid(), now, expiresAt));
+        customerAuthEntity.setLoginAt(now);
+        customerAuthEntity.setExpiresAt(expiresAt);
 
-        customerAuthDao.createAuthToken(customerAuthTokenEntity);
+        customerAuthDao.createAuthToken(customerAuthEntity);
         customerDao.updateCustomerEntity(customerEntity);
-        return customerAuthTokenEntity;
+        return customerAuthEntity;
     }
 
     /**
@@ -108,17 +108,17 @@ public class UtilityService {
 
     @Transactional(propagation = Propagation.REQUIRED)
     public CustomerEntity logout(final String accessToken) throws AuthorizationFailedException {
-        final CustomerAuthTokenEntity customerAuthTokenEntity = customerAuthDao.getCustomer(accessToken);
-        if(customerAuthTokenEntity == null) {
+        final CustomerAuthEntity customerAuthEntity = customerAuthDao.getCustomer(accessToken);
+        if(customerAuthEntity == null) {
             throw new AuthorizationFailedException("ATHR-001", "Customer is not Logged in.");
-        }else if(customerAuthTokenEntity != null && customerAuthTokenEntity.getLogoutAt() != null){
+        }else if(customerAuthEntity != null && customerAuthEntity.getLogoutAt() != null){
             throw new AuthorizationFailedException("ATHR-002","Customer is logged out. Log in again to access this endpoint.");
-        }else if (customerAuthTokenEntity != null && customerAuthTokenEntity.getExpiresAt().isBefore(ZonedDateTime.now())){
+        }else if (customerAuthEntity != null && customerAuthEntity.getExpiresAt().isBefore(ZonedDateTime.now())){
             throw new AuthorizationFailedException("ATHR-003","Your session is expired. Log in again to access this endpoint.");
         }else {
-            customerAuthTokenEntity.setLogoutAt(ZonedDateTime.now());
-            customerAuthDao.updateCustomerAuth(customerAuthTokenEntity);
-            return customerAuthTokenEntity.getCustomer();
+            customerAuthEntity.setLogoutAt(ZonedDateTime.now());
+            customerAuthDao.updateCustomerAuth(customerAuthEntity);
+            return customerAuthEntity.getCustomer();
         }
     }
 
@@ -133,23 +133,23 @@ public class UtilityService {
     @Transactional(propagation = Propagation.REQUIRED)
     public CustomerEntity updateCustomerPassword(String oldPassword, String newPassword, String accessToken)
             throws UpdateCustomerException, AuthorizationFailedException {
-        CustomerAuthTokenEntity customerAuthTokenEntity = customerDao.getCustomerAuthToken(accessToken);
+        CustomerAuthEntity customerAuthEntity = customerDao.getCustomerAuthToken(accessToken);
         if(oldPassword.length()==0 || newPassword.length()==0) {
             throw new UpdateCustomerException("UCR-003", "No field should be empty");
         }
-        if(customerAuthTokenEntity == null) {
+        if(customerAuthEntity == null) {
             throw new AuthorizationFailedException("ATHR-001", "Customer is not Logged in.");
         }
-        if(customerAuthTokenEntity != null && customerAuthTokenEntity.getLogoutAt() != null) {
+        if(customerAuthEntity != null && customerAuthEntity.getLogoutAt() != null) {
             throw new AuthorizationFailedException("ATHR-002", "Customer is logged out. Log in again to access this endpoint.");
         }
-        if(customerAuthTokenEntity != null && customerAuthTokenEntity.getExpiresAt().isBefore(ZonedDateTime.now())) {
+        if(customerAuthEntity != null && customerAuthEntity.getExpiresAt().isBefore(ZonedDateTime.now())) {
             throw new AuthorizationFailedException("ATHR-003", "Your session is expired. Log in again to access this endpoint.");
         }
         if(!isValidPassword(newPassword)) {
             throw new UpdateCustomerException("UCR-001", "Weak password!");
         }
-        CustomerEntity existingRecord = customerAuthTokenEntity.getCustomer();
+        CustomerEntity existingRecord = customerAuthEntity.getCustomer();
         final String encryptedOldPassword = cryptographyProvider.encrypt(oldPassword, existingRecord.getSalt());
         if(!encryptedOldPassword.equals(existingRecord.getPassword())) {
             throw new UpdateCustomerException("UCR-004", "Incorrect old password!");
@@ -169,22 +169,22 @@ public class UtilityService {
      */
 
     public CustomerEntity getCustomer(String accessToken) throws AuthorizationFailedException {
-        CustomerAuthTokenEntity customerAuthTokenEntity = customerDao.getCustomerAuthToken(accessToken);
+        CustomerAuthEntity customerAuthEntity = customerDao.getCustomerAuthToken(accessToken);
         //  Checking if Customer not logged In
-        if(customerAuthTokenEntity == null) {
+        if(customerAuthEntity == null) {
             throw new AuthorizationFailedException("ATHR-001", "Customer is not Logged in.");
         }
         //  Checking if customer is logged Out
-        if(customerAuthTokenEntity.getLogoutAt() != null) {
+        if(customerAuthEntity.getLogoutAt() != null) {
             throw new AuthorizationFailedException("ATHR-002", "Customer is logged out. Log in again to access this endpoint.");
         }
 
         final ZonedDateTime now = ZonedDateTime.now();
         //  Checking accessToken is Expired
-        if(customerAuthTokenEntity.getExpiresAt().compareTo(now) <= 0) {
+        if(customerAuthEntity.getExpiresAt().compareTo(now) <= 0) {
             throw new AuthorizationFailedException("ATHR-003", "Your session is expired. Log in again to access this endpoint.");
         }
-        return customerAuthTokenEntity.getCustomer();
+        return customerAuthEntity.getCustomer();
     }
 
     /**

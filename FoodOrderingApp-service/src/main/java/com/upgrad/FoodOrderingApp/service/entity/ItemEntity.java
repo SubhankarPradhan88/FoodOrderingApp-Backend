@@ -1,16 +1,13 @@
 package com.upgrad.FoodOrderingApp.service.entity;
 
-
-//import com.upgrad.FoodOrderingApp.service.common.ItemType;
-import com.upgrad.FoorOrderingApp.api.model.ItemList;
+import com.upgrad.FoodOrderingApp.service.common.ItemType;
+//import com.upgrad.FoorOrderingApp.api.model.ItemList;
 
 import javax.persistence.*;
-import javax.persistence.criteria.CriteriaBuilder;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+
 
 //This Class represents the ItemEntity table in the DB
 
@@ -43,15 +40,13 @@ public class ItemEntity implements Serializable {
     private Integer price;
 
 
-/*
     @Column(name = "type")
     @Size(max = 10)
     @NotNull
     private ItemType type;
-*/
 
 
-    private ItemList.ItemTypeEnum type;
+//    private ItemList.ItemTypeEnum type;
 
     public Integer getId() {
         return id;
@@ -69,7 +64,7 @@ public class ItemEntity implements Serializable {
         this.uuid = uuid;
     }
 
-    public String getitemName() {
+    public String getItemName() {
         return itemName;
     }
 
@@ -85,11 +80,11 @@ public class ItemEntity implements Serializable {
         this.price = price;
     }
 
-    public ItemList.ItemTypeEnum getType() {
+    public ItemType getType() {
         return type;
     }
 
-    public void setType(ItemList.ItemTypeEnum type) {
+    public void setType(ItemType type) {
         this.type = type;
     }
 }

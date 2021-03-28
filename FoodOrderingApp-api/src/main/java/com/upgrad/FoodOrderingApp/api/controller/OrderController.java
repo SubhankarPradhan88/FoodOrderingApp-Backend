@@ -168,7 +168,7 @@ public class OrderController {
                 orderItemEntities.forEach(orderItemEntity -> {          //Looping for every item in the order to get details of the item ordered
                     //Creating new ItemQuantityResponseItem
                     ItemQuantityResponseItem itemQuantityResponseItem = new ItemQuantityResponseItem()
-                            .itemName(orderItemEntity.getItem().getitemName())
+                            .itemName(orderItemEntity.getItem().getItemName())
                             .itemPrice(orderItemEntity.getItem().getPrice())
                             .id(UUID.fromString(orderItemEntity.getItem().getUuid()))
                             .type(ItemQuantityResponseItem.TypeEnum.valueOf(orderItemEntity.getItem().getType().getValue()));
@@ -181,7 +181,7 @@ public class OrderController {
                 });
                 //Creating OrderListAddressState to add in the address
                 OrderListAddressState orderListAddressState = new OrderListAddressState()
-                        .id(UUID.fromString(ordersEntity.getAddress().getState().getStateUuid()))
+                        .id(UUID.fromString(ordersEntity.getAddress().getState().getStateName()))
                         .stateName(ordersEntity.getAddress().getState().getStateName());
 
                 //Creating OrderListAddress to add address to the orderList
@@ -203,7 +203,7 @@ public class OrderController {
                         .id(UUID.fromString(ordersEntity.getCustomer().getUuid()))
                         .firstName(ordersEntity.getCustomer().getFirstName())
                         .lastName(ordersEntity.getCustomer().getLastName())
-                        .emailAddress(ordersEntity.getCustomer().getEmail())
+                        .emailAddress(ordersEntity.getCustomer().getEmailAddress())
                         .contactNumber(ordersEntity.getCustomer().getContactNumber());
 
                 //Creating OrderListPayment to add Payment to the orderList

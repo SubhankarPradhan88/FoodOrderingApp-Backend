@@ -7,6 +7,7 @@
 //import com.upgrad.FoodOrderingApp.service.businness.CustomerService;
 //import com.upgrad.FoodOrderingApp.service.businness.ItemService;
 //import com.upgrad.FoodOrderingApp.service.businness.RestaurantService;
+//import com.upgrad.FoodOrderingApp.service.entity.*;
 //import com.upgrad.FoodOrderingApp.service.exception.AuthorizationFailedException;
 //import com.upgrad.FoodOrderingApp.service.exception.CategoryNotFoundException;
 //import com.upgrad.FoodOrderingApp.service.exception.InvalidRatingException;
@@ -25,6 +26,7 @@
 //import java.util.UUID;
 //
 //import static com.upgrad.FoodOrderingApp.service.common.ItemType.NON_VEG;
+//import static org.junit.Assert.assertEquals;
 //import static org.mockito.ArgumentMatchers.anyString;
 //import static org.mockito.Mockito.*;
 //import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -447,21 +449,21 @@
 //        return categoryEntity;
 //    }
 //
-//    private RestaurantEntity getRestaurantEntity() {
-//        final String stateId = UUID.randomUUID().toString();
-//        final StateEntity stateEntity = new StateEntity(stateId, "someState");
-//        final String addressId = UUID.randomUUID().toString();
-//        final AddressEntity addressEntity = new AddressEntity(addressId, "a/b/c", "someLocality", "someCity", "100000", stateEntity);
-//
-//        final RestaurantEntity restaurantEntity = new RestaurantEntity();
-//        final String restaurantId = UUID.randomUUID().toString();
-//        restaurantEntity.setUuid(restaurantId);
-//        restaurantEntity.setAddress(addressEntity);
-//        restaurantEntity.setAvgPrice(123);
-//        restaurantEntity.setCustomerRating(3.4);
-//        restaurantEntity.setNumberCustomersRated(200);
-//        restaurantEntity.setPhotoUrl("someurl");
-//        restaurantEntity.setRestaurantName("Famous Restaurant");
-//        return restaurantEntity;
-//    }
+////    private RestaurantEntity getRestaurantEntity() {
+////        final String stateId = UUID.randomUUID().toString();
+////        final StateEntity stateEntity = new StateEntity(stateId, "someState");
+////        final String addressId = UUID.randomUUID().toString();
+////        final AddressEntity addressEntity = new AddressEntity(addressId, "a/b/c", "someLocality", "someCity", "100000", stateEntity);
+////
+////        final RestaurantEntity restaurantEntity = new RestaurantEntity();
+////        final String restaurantId = UUID.randomUUID().toString();
+////        restaurantEntity.setUuid(restaurantId);
+////        restaurantEntity.setAddress(addressEntity);
+////        restaurantEntity.setAvgPrice(123);
+////        restaurantEntity.setCustomerRating(3.4);
+////        restaurantEntity.setNumberCustomersRated(200);
+////        restaurantEntity.setPhotoUrl("someurl");
+////        restaurantEntity.setRestaurantName("Famous Restaurant");
+////        return restaurantEntity;
+////    }
 //}

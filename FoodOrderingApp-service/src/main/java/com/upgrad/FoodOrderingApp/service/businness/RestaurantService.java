@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Comparator;
 import java.util.List;
 
@@ -25,30 +27,30 @@ public class RestaurantService {
 
 
     //List all restaurants sorted by rating - Descending order
-    public List<RestaurantEntity> getAllRestaurants(){
-        return this.restaurantDao.getAllRestaurants();
+    public List<RestaurantEntity> restaurantsByRating() {
+        return this.restaurantDao.restaurantsByRating();
     }
 
     //List restaurant details by restaurant name
-    public List<RestaurantEntity> getRestaurantsByName(String restaurantName) throws RestaurantNotFoundException {
+    public List<RestaurantEntity> restaurantsByName(String restaurantName) throws RestaurantNotFoundException {
 
         // Throw exception if path variable(restaurant_name) is empty
-        if(restaurantName == null || restaurantName.isEmpty() || restaurantName.equalsIgnoreCase("\"\"")){
+        if (restaurantName == null || restaurantName.isEmpty() || restaurantName.equalsIgnoreCase("\"\"")) {
             throw new RestaurantNotFoundException("RNF-003", "Restaurant name field should not be empty");
         }
-        return restaurantDao.getRestaurantsByName(restaurantName);
+        return restaurantDao.restaurantsByName(restaurantName);
     }
 
     //List restaurants belonging to certain category
-    public List<RestaurantEntity> getRestaurantByCategoryId(final String categoryId) throws CategoryNotFoundException {
+    public List<RestaurantEntity> restaurantByCategory(final String categoryId) throws CategoryNotFoundException {
 
         if (categoryId.equals("")) {
             throw new CategoryNotFoundException("CNF-001", "Category id field should not be empty");
         }
 
-        CategoryEntity categoryEntity = categoryService.getCategoryEntityByUuid(categoryId);
+        CategoryEntity categoryEntity = categoryService.getCategoryById(categoryId);
 
-        if(categoryEntity == null) {
+        if (categoryEntity == null) {
             throw new CategoryNotFoundException("CNF-002", "No category by this id");
         }
 
@@ -64,7 +66,7 @@ public class RestaurantService {
             throw new RestaurantNotFoundException("RNF-002", "Restaurant id field should not be empty");
         }
 
-        RestaurantEntity restaurantEntity = restaurantDao.getRestaurantByUUId(restaurantUUID);
+        RestaurantEntity restaurantEntity = restaurantDao.restaurantByUUID(restaurantUUID);
 
         if (restaurantEntity == null) {
             throw new RestaurantNotFoundException("RNF-001", "No restaurant by this id");
@@ -84,10 +86,10 @@ public class RestaurantService {
         //Re-calculating average rating including the new rating
         //Also updating number of customers ratings
         Double newAverageRating = (
-                ((restaurantEntity.getNumberCustomersRated()*restaurantEntity.getCustomerRating())+newRating)/
-                        (restaurantEntity.getNumberCustomersRated()+1));
+                ((restaurantEntity.getNumberCustomersRated() * restaurantEntity.getCustomerRating()) + newRating) /
+                        (restaurantEntity.getNumberCustomersRated() + 1));
         restaurantEntity.setNumberCustomersRated(restaurantEntity.getNumberCustomersRated() + 1);
-
+        newAverageRating = BigDecimal.valueOf(newAverageRating).setScale(2, RoundingMode.HALF_UP).doubleValue();
         restaurantEntity.setCustomerRating(newAverageRating);
         return restaurantDao.updateRestaurantEntity(restaurantEntity);
     }

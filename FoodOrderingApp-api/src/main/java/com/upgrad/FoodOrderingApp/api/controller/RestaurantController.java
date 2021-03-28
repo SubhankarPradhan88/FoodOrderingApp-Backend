@@ -43,14 +43,13 @@ public class RestaurantController {
     private ItemService itemService;
 
     /**
-     *
      * @return List of all restaurants in the database
      * @throws RestaurantNotFoundException
      */
     @RequestMapping(method = RequestMethod.GET, path = "/restaurant", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<RestaurantListResponse> getAllRestaurants() throws RestaurantNotFoundException {
 
-        List<RestaurantEntity> restaurantEntityList = restaurantService.getAllRestaurants();
+        List<RestaurantEntity> restaurantEntityList = restaurantService.restaurantsByRating();
 
         RestaurantListResponse restaurantListResponse = new RestaurantListResponse();
 
@@ -89,18 +88,18 @@ public class RestaurantController {
 
 
     /**
-     *
      * @param restaurantName
      * @return List of all restaurants in the database
-     * @throws RestaurantNotFoundException  - when restaurant name field is empty
+     * @throws RestaurantNotFoundException - when restaurant name field is empty
      */
     @RequestMapping(method = RequestMethod.GET, path = "/restaurant/name/{restaurant_name}", produces =
             MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<RestaurantListResponse> getRestaurantByName(@PathVariable(
+    public ResponseEntity<RestaurantListResponse> restaurantsByName(@PathVariable(
             "restaurant_name") final String restaurantName) throws RestaurantNotFoundException {
 
         // Getting the list of all restaurants with help of restaurant business service based on input restaurant name
-        final List<RestaurantEntity> allRestaurants = restaurantService.getRestaurantsByName(restaurantName);
+        final List<RestaurantEntity> allRestaurants =
+                restaurantService.restaurantsByName(restaurantName.trim());
 
         RestaurantListResponse restaurantListResponse = new RestaurantListResponse();
 
@@ -144,18 +143,18 @@ public class RestaurantController {
 
 
     /**
-     *
      * @param categoryID
      * @return List of all restaurants having given category id
-     * @throws CategoryNotFoundException - When Given category id  field is empty
+     * @throws CategoryNotFoundException   - When Given category id  field is empty
      * @throws RestaurantNotFoundException - When given restaurant id field is empty
      */
     @RequestMapping(method = RequestMethod.GET, path = "/restaurant/category/{category_id}", produces =
             MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<RestaurantListResponse> getRestaurantByCategoryID(@PathVariable(
+    public ResponseEntity<RestaurantListResponse> restaurantByCategory(@PathVariable(
             "category_id") final String categoryID) throws CategoryNotFoundException, RestaurantNotFoundException {
 
-        List<RestaurantEntity> restaurantEntityList = restaurantService.getRestaurantByCategoryId(categoryID);
+        List<RestaurantEntity> restaurantEntityList =
+                restaurantService.restaurantByCategory(categoryID.trim());
 
         RestaurantListResponse restaurantListResponse = new RestaurantListResponse();
 
@@ -194,7 +193,6 @@ public class RestaurantController {
 
 
     /**
-     *
      * @param restaurantID
      * @return Restaurant with details based on given restaurant id
      * @throws RestaurantNotFoundException - When given restaurant id field is empty
@@ -204,7 +202,7 @@ public class RestaurantController {
     public ResponseEntity<RestaurantDetailsResponse> getRestaurantByRestaurantID(@PathVariable(
             "restaurant_id") final String restaurantID) throws RestaurantNotFoundException {
 
-        RestaurantEntity restaurantEntity = restaurantService.restaurantByUUID(restaurantID);
+        RestaurantEntity restaurantEntity = restaurantService.restaurantByUUID(restaurantID.trim());
 
         RestaurantDetailsResponseAddressState restaurantDetailsResponseAddressState = new RestaurantDetailsResponseAddressState()
                 .id(UUID.fromString(restaurantEntity.getAddress().getState().getUuid()))
@@ -227,12 +225,12 @@ public class RestaurantController {
                 .numberCustomersRated(restaurantEntity.getNumberCustomersRated())
                 .address(restaurantDetailsResponseAddress);
 
-        for (CategoryEntity categoryEntity : categoryService.getCategoriesByRestaurant(restaurantID)) {
+        for (CategoryEntity categoryEntity : categoryService.getCategoriesByRestaurant(restaurantID.trim())) {
             CategoryList categoryList = new CategoryList()
                     .id(UUID.fromString(categoryEntity.getUuid()))
                     .categoryName(categoryEntity.getCategoryName());
 
-            for (ItemEntity itemEntity : itemService.getItemsByCategoryAndRestaurant(restaurantID, categoryEntity.getUuid())) {
+            for (ItemEntity itemEntity : itemService.getItemsByCategoryAndRestaurant(restaurantID.trim(), categoryEntity.getUuid())) {
                 ItemList itemList = new ItemList()
                         .id(UUID.fromString(itemEntity.getUuid()))
                         .itemName(itemEntity.getItemName())
@@ -250,15 +248,14 @@ public class RestaurantController {
     }
 
 
-     /**
-     *
+    /**
      * @param authorization
      * @param restaurantId
      * @param customerRating
      * @return Restaurant uuid of the rating updated restaurant
-     * @throws AuthorizationFailedException  - When customer is not logged in or logged out or login expired
+     * @throws AuthorizationFailedException - When customer is not logged in or logged out or login expired
      * @throws RestaurantNotFoundException  - When given restaurant id field is empty
-     * @throws InvalidRatingException - When the Rating value provided is invalid
+     * @throws InvalidRatingException       - When the Rating value provided is invalid
      */
     @CrossOrigin
     @RequestMapping(method = RequestMethod.PUT, path = "/api/restaurant/{restaurant_id}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -266,22 +263,21 @@ public class RestaurantController {
             @RequestParam(name = "customer_rating") final Double customerRating,
             @PathVariable("restaurant_id") final String restaurantId,
             @RequestHeader("authorization") final String authorization)
-            throws AuthorizationFailedException, RestaurantNotFoundException, InvalidRatingException
-    {
+            throws AuthorizationFailedException, RestaurantNotFoundException, InvalidRatingException {
 
         String[] bearerToken = authorization.split("Bearer ");
         CustomerEntity customerEntity = null;
-        if(bearerToken.length==1){
-            throw new AuthorizationFailedException("ATHR-005","Use valid authorization format <Bearer accessToken>");
+        if (bearerToken.length == 1) {
+            throw new AuthorizationFailedException("ATHR-005", "Use valid authorization format <Bearer accessToken>");
         } else {
             customerEntity = utilityService.getCustomer(bearerToken[1]);
         }
 
-        RestaurantEntity restaurantEntity = restaurantService.restaurantByUUID(restaurantId);
+        RestaurantEntity restaurantEntity = restaurantService.restaurantByUUID(restaurantId.trim());
         restaurantService.updateRestaurantRating(restaurantEntity, customerRating);
 
         RestaurantUpdatedResponse restaurantUpdatedResponse = new RestaurantUpdatedResponse()
-                .id(UUID.fromString(restaurantId))
+                .id(UUID.fromString(restaurantId.trim()))
                 .status("RESTAURANT RATING UPDATED SUCCESSFULLY");
         return new ResponseEntity<RestaurantUpdatedResponse>(restaurantUpdatedResponse, HttpStatus.OK);
     }

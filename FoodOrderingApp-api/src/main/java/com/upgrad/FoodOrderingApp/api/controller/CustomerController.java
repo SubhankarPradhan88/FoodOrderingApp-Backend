@@ -108,7 +108,7 @@ public class CustomerController {
      */
     @RequestMapping(method = RequestMethod.PUT, path = "/customer/password", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<UpdatePasswordResponse> updateCustomerPassword(@RequestHeader("authorization") final String accessToken,
-            @RequestBody UpdatePasswordRequest updatePasswordRequest) throws UpdateCustomerException, AuthorizationFailedException {
+                                                                         @RequestBody UpdatePasswordRequest updatePasswordRequest) throws UpdateCustomerException, AuthorizationFailedException {
         final CustomerEntity customerEntity = utilityService.updateCustomerPassword(updatePasswordRequest.getOldPassword(),
                 updatePasswordRequest.getNewPassword(), accessToken);
 
@@ -125,7 +125,7 @@ public class CustomerController {
      */
     @RequestMapping(method = RequestMethod.PUT, path = "/customer", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<UpdateCustomerResponse> updateCustomerDetails(@RequestHeader("authorization") final String authorization,
-            @RequestBody(required = false) UpdateCustomerRequest updateCustomerRequest) throws UpdateCustomerException, AuthorizationFailedException {
+                                                                        @RequestBody(required = false) UpdateCustomerRequest updateCustomerRequest) throws UpdateCustomerException, AuthorizationFailedException {
         // Access the accessToken from the request Header
         String accessToken = authorization.split("Bearer ")[1];
 
@@ -150,4 +150,3 @@ public class CustomerController {
     }
 
 }
-

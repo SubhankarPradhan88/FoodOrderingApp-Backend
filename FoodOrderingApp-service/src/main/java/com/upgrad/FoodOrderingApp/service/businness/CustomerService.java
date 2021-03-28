@@ -40,6 +40,9 @@ public class CustomerService {
         if(isContactNumberInUse(customerEntity)) {
             throw new SignUpRestrictedException("SGR-001","This contact number is already registered! Try other contact number.");
         }
+        if(!validateCustomer(customerEntity)) {
+            throw new SignUpRestrictedException("SGR-005", "Except last name all fields should be filled");
+        }
         if(!isValidEmailID(customerEntity)) {
             throw new SignUpRestrictedException("SGR-002", "Invalid email-id format!");
         }
@@ -49,9 +52,7 @@ public class CustomerService {
         if(!isValidPassword(customerEntity.getPassword())) {
             throw new SignUpRestrictedException("SGR-004", "Weak password!");
         }
-        if(!validateCustomer(customerEntity)) {
-            throw new SignUpRestrictedException("SGR-005", "Except last name all fields should be filled");
-        }
+
         // Encrypted password and salt assigned to the customer that is being created.
         final String[] encryptedText = cryptographyProvider.encrypt(customerEntity.getPassword());
         customerEntity.setSalt(encryptedText[0]);

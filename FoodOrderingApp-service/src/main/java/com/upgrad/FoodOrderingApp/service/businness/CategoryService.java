@@ -8,19 +8,18 @@ import com.upgrad.FoodOrderingApp.service.exception.RestaurantNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class CategoryBusinessService {
+public class CategoryService {
 
     @Autowired
     private CategoryDao categoryDao;
 
     @Autowired
-    RestaurantBusinessService restaurantBusinessService;
+    RestaurantService restaurantService;
 
     // A Method which is for  getAllCategories endpoint
     public List<CategoryEntity> getAllCategories(){
@@ -48,7 +47,7 @@ public class CategoryBusinessService {
 
     //List all categories mapped to a restaurant - list by restaurant UUID
     public List<CategoryEntity> getCategoriesByRestaurant(String restaurantUUID) throws RestaurantNotFoundException {
-        RestaurantEntity restaurantEntity = restaurantBusinessService.getRestaurantByUUId(restaurantUUID);
+        RestaurantEntity restaurantEntity = restaurantService.restaurantByUUID(restaurantUUID);
         return restaurantEntity.getCategories().stream()
                 .sorted(Comparator.comparing(CategoryEntity::getCategoryName))
                 .collect(Collectors.toList());

@@ -1,11 +1,13 @@
 package com.upgrad.FoodOrderingApp.api.controller;
 
 import com.upgrad.FoodOrderingApp.api.model.*;
-import com.upgrad.FoodOrderingApp.service.businness.CategoryBusinessService;
-import com.upgrad.FoodOrderingApp.service.businness.RestaurantBusinessService;
-import com.upgrad.FoodOrderingApp.service.entity.AddressEntity;
+import com.upgrad.FoodOrderingApp.service.businness.CategoryService;
+import com.upgrad.FoodOrderingApp.service.businness.ItemService;
+import com.upgrad.FoodOrderingApp.service.businness.RestaurantService;
+import com.upgrad.FoodOrderingApp.service.businness.UtilityService;
 import com.upgrad.FoodOrderingApp.service.entity.CategoryEntity;
 import com.upgrad.FoodOrderingApp.service.entity.CustomerEntity;
+import com.upgrad.FoodOrderingApp.service.entity.ItemEntity;
 import com.upgrad.FoodOrderingApp.service.entity.RestaurantEntity;
 import com.upgrad.FoodOrderingApp.service.exception.AuthorizationFailedException;
 import com.upgrad.FoodOrderingApp.service.exception.CategoryNotFoundException;
@@ -19,8 +21,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -31,13 +31,16 @@ public class RestaurantController {
 
 
     @Autowired
-    RestaurantBusinessService restaurantBusinessService;
+    RestaurantService restaurantService;
 
     @Autowired
-    private CategoryBusinessService categoryBusinessService;
+    private CategoryService categoryService;
 
     @Autowired
-    private CustomerService customerService;
+    private UtilityService utilityService;
+
+    @Autowired
+    private ItemService itemService;
 
     /**
      *
@@ -47,7 +50,7 @@ public class RestaurantController {
     @RequestMapping(method = RequestMethod.GET, path = "/restaurant", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<RestaurantListResponse> getAllRestaurants() throws RestaurantNotFoundException {
 
-        List<RestaurantEntity> restaurantEntityList = restaurantBusinessService.getAllRestaurants();
+        List<RestaurantEntity> restaurantEntityList = restaurantService.getAllRestaurants();
 
         RestaurantListResponse restaurantListResponse = new RestaurantListResponse();
 
@@ -58,13 +61,13 @@ public class RestaurantController {
 
             RestaurantDetailsResponseAddress restaurantDetailsResponseAddress = new RestaurantDetailsResponseAddress()
                     .id(UUID.fromString(restaurantEntity.getAddress().getUuid()))
-                    .flatBuildingName(restaurantEntity.getAddress().getFlatBuilNumber())
+                    .flatBuildingName(restaurantEntity.getAddress().getFlatBuilNo())
                     .locality(restaurantEntity.getAddress().getLocality())
                     .city(restaurantEntity.getAddress().getCity())
                     .pincode(restaurantEntity.getAddress().getPinCode())
                     .state(restaurantDetailsResponseAddressState);
 
-            String categoriesString = categoryBusinessService.getCategoriesByRestaurant(restaurantEntity.getUuid())
+            String categoriesString = categoryService.getCategoriesByRestaurant(restaurantEntity.getUuid())
                     .stream()
                     .map(o -> String.valueOf(o.getCategoryName()))
                     .collect(Collectors.joining(", "));
@@ -97,7 +100,7 @@ public class RestaurantController {
             "restaurant_name") final String restaurantName) throws RestaurantNotFoundException {
 
         // Getting the list of all restaurants with help of restaurant business service based on input restaurant name
-        final List<RestaurantEntity> allRestaurants = restaurantBusinessService.getRestaurantsByName(restaurantName);
+        final List<RestaurantEntity> allRestaurants = restaurantService.getRestaurantsByName(restaurantName);
 
         RestaurantListResponse restaurantListResponse = new RestaurantListResponse();
 
@@ -112,7 +115,7 @@ public class RestaurantController {
 
             RestaurantDetailsResponseAddress restaurantDetailsResponseAddress = new RestaurantDetailsResponseAddress()
                     .id(UUID.fromString(restaurantEntity.getAddress().getUuid()))
-                    .flatBuildingName(restaurantEntity.getAddress().getFlatBuilNumber())
+                    .flatBuildingName(restaurantEntity.getAddress().getFlatBuilNo())
                     .locality(restaurantEntity.getAddress().getLocality())
                     .city(restaurantEntity.getAddress().getCity())
                     .pincode(restaurantEntity.getAddress().getPinCode())
@@ -152,7 +155,7 @@ public class RestaurantController {
     public ResponseEntity<RestaurantListResponse> getRestaurantByCategoryID(@PathVariable(
             "category_id") final String categoryID) throws CategoryNotFoundException, RestaurantNotFoundException {
 
-        List<RestaurantEntity> restaurantEntityList = restaurantBusinessService.getRestaurantByCategoryId(categoryID);
+        List<RestaurantEntity> restaurantEntityList = restaurantService.getRestaurantByCategoryId(categoryID);
 
         RestaurantListResponse restaurantListResponse = new RestaurantListResponse();
 
@@ -163,13 +166,13 @@ public class RestaurantController {
 
             RestaurantDetailsResponseAddress restaurantDetailsResponseAddress = new RestaurantDetailsResponseAddress()
                     .id(UUID.fromString(restaurantEntity.getAddress().getUuid()))
-                    .flatBuildingName(restaurantEntity.getAddress().getFlatBuilNumber())
+                    .flatBuildingName(restaurantEntity.getAddress().getFlatBuilNo())
                     .locality(restaurantEntity.getAddress().getLocality())
                     .city(restaurantEntity.getAddress().getCity())
                     .pincode(restaurantEntity.getAddress().getPinCode())
                     .state(restaurantDetailsResponseAddressState);
 
-            String categoriesString = categoryBusinessService.getCategoriesByRestaurant(restaurantEntity.getUuid())
+            String categoriesString = categoryService.getCategoriesByRestaurant(restaurantEntity.getUuid())
                     .stream()
                     .map(o -> String.valueOf(o.getCategoryName()))
                     .collect(Collectors.joining(", "));
@@ -201,7 +204,7 @@ public class RestaurantController {
     public ResponseEntity<RestaurantDetailsResponse> getRestaurantByRestaurantID(@PathVariable(
             "restaurant_id") final String restaurantID) throws RestaurantNotFoundException {
 
-        RestaurantEntity restaurantEntity = restaurantBusinessService.getRestaurantByUUId(restaurantID);
+        RestaurantEntity restaurantEntity = restaurantService.restaurantByUUID(restaurantID);
 
         RestaurantDetailsResponseAddressState restaurantDetailsResponseAddressState = new RestaurantDetailsResponseAddressState()
                 .id(UUID.fromString(restaurantEntity.getAddress().getState().getUuid()))
@@ -209,7 +212,7 @@ public class RestaurantController {
 
         RestaurantDetailsResponseAddress restaurantDetailsResponseAddress = new RestaurantDetailsResponseAddress()
                 .id(UUID.fromString(restaurantEntity.getAddress().getUuid()))
-                .flatBuildingName(restaurantEntity.getAddress().getFlatBuilNumber())
+                .flatBuildingName(restaurantEntity.getAddress().getFlatBuilNo())
                 .locality(restaurantEntity.getAddress().getLocality())
                 .city(restaurantEntity.getAddress().getCity())
                 .pincode(restaurantEntity.getAddress().getPinCode())
@@ -224,7 +227,7 @@ public class RestaurantController {
                 .numberCustomersRated(restaurantEntity.getNumberCustomersRated())
                 .address(restaurantDetailsResponseAddress);
 
-        for (CategoryEntity categoryEntity : categoryBusinessService.getCategoriesByRestaurant(restaurantID)) {
+        for (CategoryEntity categoryEntity : categoryService.getCategoriesByRestaurant(restaurantID)) {
             CategoryList categoryList = new CategoryList()
                     .id(UUID.fromString(categoryEntity.getUuid()))
                     .categoryName(categoryEntity.getCategoryName());
@@ -271,11 +274,11 @@ public class RestaurantController {
         if(bearerToken.length==1){
             throw new AuthorizationFailedException("ATHR-005","Use valid authorization format <Bearer accessToken>");
         } else {
-            customerEntity = customerService.getCustomer(bearerToken[1]);
+            customerEntity = utilityService.getCustomer(bearerToken[1]);
         }
 
-        RestaurantEntity restaurantEntity = restaurantBusinessService.getRestaurantByUUId(restaurantId);
-        restaurantBusinessService.updateRestaurantRating(restaurantEntity, customerRating);
+        RestaurantEntity restaurantEntity = restaurantService.restaurantByUUID(restaurantId);
+        restaurantService.updateRestaurantRating(restaurantEntity, customerRating);
 
         RestaurantUpdatedResponse restaurantUpdatedResponse = new RestaurantUpdatedResponse()
                 .id(UUID.fromString(restaurantId))

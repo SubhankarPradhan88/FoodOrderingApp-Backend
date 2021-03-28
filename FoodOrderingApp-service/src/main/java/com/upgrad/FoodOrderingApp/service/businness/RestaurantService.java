@@ -15,13 +15,13 @@ import java.util.Comparator;
 import java.util.List;
 
 @Service
-public class RestaurantBusinessService {
+public class RestaurantService {
 
     @Autowired
     private RestaurantDao restaurantDao;
 
     @Autowired
-    private CategoryBusinessService categoryBusinessService;
+    private CategoryService categoryService;
 
 
     //List all restaurants sorted by rating - Descending order
@@ -46,7 +46,7 @@ public class RestaurantBusinessService {
             throw new CategoryNotFoundException("CNF-001", "Category id field should not be empty");
         }
 
-        CategoryEntity categoryEntity = categoryBusinessService.getCategoryEntityByUuid(categoryId);
+        CategoryEntity categoryEntity = categoryService.getCategoryEntityByUuid(categoryId);
 
         if(categoryEntity == null) {
             throw new CategoryNotFoundException("CNF-002", "No category by this id");
@@ -58,7 +58,7 @@ public class RestaurantBusinessService {
     }
 
     //Display restaurant details by restaurant UUID
-    public RestaurantEntity getRestaurantByUUId(String restaurantUUID) throws RestaurantNotFoundException {
+    public RestaurantEntity restaurantByUUID(String restaurantUUID) throws RestaurantNotFoundException {
 
         if (restaurantUUID.equals("")) {
             throw new RestaurantNotFoundException("RNF-002", "Restaurant id field should not be empty");

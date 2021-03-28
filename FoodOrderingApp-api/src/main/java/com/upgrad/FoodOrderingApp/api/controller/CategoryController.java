@@ -5,8 +5,9 @@ import com.upgrad.FoodOrderingApp.api.model.CategoriesListResponse;
 import com.upgrad.FoodOrderingApp.api.model.CategoryDetailsResponse;
 import com.upgrad.FoodOrderingApp.api.model.CategoryListResponse;
 import com.upgrad.FoodOrderingApp.api.model.ItemList;
-import com.upgrad.FoodOrderingApp.service.businness.CategoryBusinessService;
+import com.upgrad.FoodOrderingApp.service.businness.CategoryService;
 import com.upgrad.FoodOrderingApp.service.entity.CategoryEntity;
+import com.upgrad.FoodOrderingApp.service.entity.ItemEntity;
 import com.upgrad.FoodOrderingApp.service.exception.CategoryNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,7 +15,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,7 +24,7 @@ import java.util.UUID;
 public class CategoryController {
 
     @Autowired
-    private CategoryBusinessService categoryBusinessService;
+    private CategoryService categoryService;
 
     /**
      * endpoint to get the category by ID
@@ -35,7 +35,7 @@ public class CategoryController {
     @RequestMapping(method = RequestMethod.GET, path = "/category/{category_id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<CategoryDetailsResponse> getCategoryById(@PathVariable String category_id) throws CategoryNotFoundException {
 
-        CategoryEntity categoryEntity = categoryBusinessService.getCategoryEntityByUuid(category_id.toLowerCase());
+        CategoryEntity categoryEntity = categoryService.getCategoryEntityByUuid(category_id.toLowerCase());
 
 
         CategoryDetailsResponse categoryDetailsResponse = new CategoryDetailsResponse().id(UUID.fromString(categoryEntity.getUuid())).categoryName(categoryEntity.getCategoryName());
@@ -61,7 +61,7 @@ public class CategoryController {
     @RequestMapping(method = RequestMethod.GET, path = "/category", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity getAllCategories() {
 
-        List<CategoryEntity> categoryEntityList = categoryBusinessService.getAllCategories();
+        List<CategoryEntity> categoryEntityList = categoryService.getAllCategories();
 
         CategoriesListResponse categoriesListResponse = new CategoriesListResponse();
 

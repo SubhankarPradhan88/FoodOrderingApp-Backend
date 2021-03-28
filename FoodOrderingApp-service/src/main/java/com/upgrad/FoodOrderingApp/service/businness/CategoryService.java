@@ -22,14 +22,14 @@ public class CategoryService {
     RestaurantService restaurantService;
 
     // A Method which is for  getAllCategories endpoint
-    public List<CategoryEntity> getAllCategories(){
-        return categoryDao.getAllCategories().stream()
+    public List<CategoryEntity> getAllCategoriesOrderedByName(){
+        return categoryDao.getAllCategoriesOrderedByName().stream()
                 .sorted(Comparator.comparing(CategoryEntity::getCategoryName))
                 .collect(Collectors.toList());
     }
 
     // A Method which takes the categoryUUId as parameter for  getCategoryEntityByUUId endpoint
-    public CategoryEntity getCategoryEntityByUuid(final String categoryUUId) throws CategoryNotFoundException {
+    public CategoryEntity getCategoryById(final String categoryUUId) throws CategoryNotFoundException {
 
         if (categoryUUId.equals("")) {
             throw new CategoryNotFoundException("CNF-001", "Category id field should not be empty");

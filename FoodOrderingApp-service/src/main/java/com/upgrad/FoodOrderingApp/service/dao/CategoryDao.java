@@ -15,7 +15,7 @@ public class CategoryDao {
     private EntityManager entityManager;
 
     //List all categories availabele in DB
-    public List<CategoryEntity> getAllCategories(){
+    public List<CategoryEntity> getAllCategoriesOrderedByName(){
         try {
             return entityManager.createNamedQuery("allCategories", CategoryEntity.class).getResultList();
         } catch(NoResultException nre) {

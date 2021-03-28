@@ -50,7 +50,7 @@ public class RestaurantController {
     @RequestMapping(method = RequestMethod.GET, path = "/restaurant", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<RestaurantListResponse> getAllRestaurants() throws RestaurantNotFoundException {
 
-        List<RestaurantEntity> restaurantEntityList = restaurantService.getAllRestaurants();
+        List<RestaurantEntity> restaurantEntityList = restaurantService.restaurantsByRating();
 
         RestaurantListResponse restaurantListResponse = new RestaurantListResponse();
 
@@ -96,11 +96,11 @@ public class RestaurantController {
      */
     @RequestMapping(method = RequestMethod.GET, path = "/restaurant/name/{restaurant_name}", produces =
             MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<RestaurantListResponse> getRestaurantByName(@PathVariable(
+    public ResponseEntity<RestaurantListResponse> restaurantsByName(@PathVariable(
             "restaurant_name") final String restaurantName) throws RestaurantNotFoundException {
 
         // Getting the list of all restaurants with help of restaurant business service based on input restaurant name
-        final List<RestaurantEntity> allRestaurants = restaurantService.getRestaurantsByName(restaurantName);
+        final List<RestaurantEntity> allRestaurants = restaurantService.restaurantsByName(restaurantName);
 
         RestaurantListResponse restaurantListResponse = new RestaurantListResponse();
 
@@ -152,10 +152,10 @@ public class RestaurantController {
      */
     @RequestMapping(method = RequestMethod.GET, path = "/restaurant/category/{category_id}", produces =
             MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<RestaurantListResponse> getRestaurantByCategoryID(@PathVariable(
+    public ResponseEntity<RestaurantListResponse> restaurantByCategory(@PathVariable(
             "category_id") final String categoryID) throws CategoryNotFoundException, RestaurantNotFoundException {
 
-        List<RestaurantEntity> restaurantEntityList = restaurantService.getRestaurantByCategoryId(categoryID);
+        List<RestaurantEntity> restaurantEntityList = restaurantService.restaurantByCategory(categoryID);
 
         RestaurantListResponse restaurantListResponse = new RestaurantListResponse();
 

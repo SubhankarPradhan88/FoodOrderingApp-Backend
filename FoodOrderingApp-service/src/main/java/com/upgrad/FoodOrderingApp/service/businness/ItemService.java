@@ -43,7 +43,7 @@ public class ItemService {
     public List<ItemEntity> getItemsByCategoryAndRestaurant(String restaurantUuid, String categoryUuid) {
 
         //Calls getRestaurantByUuid of restaurantDao to get the  RestaurantEntity
-        RestaurantEntity restaurantEntity = restaurantDao.getRestaurantByUUId(restaurantUuid);
+        RestaurantEntity restaurantEntity = restaurantDao.restaurantByUUID(restaurantUuid);
 
         //Calls getCategoryByUuid of categoryDao to get the  CategoryEntity
         CategoryEntity categoryEntity = categoryDao.getCategoryByUUId(categoryUuid);

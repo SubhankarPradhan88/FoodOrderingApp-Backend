@@ -35,7 +35,7 @@ public class CategoryController {
     @RequestMapping(method = RequestMethod.GET, path = "/category/{category_id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<CategoryDetailsResponse> getCategoryById(@PathVariable String category_id) throws CategoryNotFoundException {
 
-        CategoryEntity categoryEntity = categoryService.getCategoryEntityByUuid(category_id.toLowerCase());
+        CategoryEntity categoryEntity = categoryService.getCategoryById(category_id.toLowerCase());
 
 
         CategoryDetailsResponse categoryDetailsResponse = new CategoryDetailsResponse().id(UUID.fromString(categoryEntity.getUuid())).categoryName(categoryEntity.getCategoryName());
@@ -61,7 +61,7 @@ public class CategoryController {
     @RequestMapping(method = RequestMethod.GET, path = "/category", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity getAllCategories() {
 
-        List<CategoryEntity> categoryEntityList = categoryService.getAllCategories();
+        List<CategoryEntity> categoryEntityList = categoryService.getAllCategoriesOrderedByName();
 
         CategoriesListResponse categoriesListResponse = new CategoriesListResponse();
 

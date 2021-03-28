@@ -20,7 +20,7 @@ public class CustomerDao {
      * @param customerEntity : userEntity body
      * @return User details
      */
-    public CustomerEntity createCustomer(CustomerEntity customerEntity) {
+    public CustomerEntity saveCustomer(CustomerEntity customerEntity) {
         entityManager.persist(customerEntity);
         return customerEntity;
     }

@@ -37,7 +37,7 @@ public class CustomerService {
      */
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public CustomerEntity signup(CustomerEntity customerEntity) throws SignUpRestrictedException {
+    public CustomerEntity saveCustomer(CustomerEntity customerEntity) throws SignUpRestrictedException {
         if(isContactNumberInUse(customerEntity)) {
             throw new SignUpRestrictedException("SGR-001","This contact number is already registered! Try other contact number.");
         }
@@ -58,7 +58,7 @@ public class CustomerService {
         customerEntity.setSalt(encryptedText[0]);
         customerEntity.setPassword(encryptedText[1]);
 
-        return customerDao.createCustomer(customerEntity);
+        return customerDao.saveCustomer(customerEntity);
     }
 
     /**
@@ -71,7 +71,7 @@ public class CustomerService {
      */
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public CustomerAuthEntity login(final String contactNumber, final String password) throws AuthenticationFailedException {
+    public CustomerAuthEntity authenticate(final String contactNumber, final String password) throws AuthenticationFailedException {
         final CustomerEntity customerEntity = customerDao.getCustomerByContactNumber(contactNumber);
 
         if(customerEntity == null) {
@@ -210,7 +210,6 @@ public class CustomerService {
 
         return updatedCustomer;
     }
-
 
     /**
      * helper method to check the authentication of user through accesstoken

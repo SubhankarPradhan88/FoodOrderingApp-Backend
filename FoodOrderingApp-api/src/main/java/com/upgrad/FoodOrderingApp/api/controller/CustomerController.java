@@ -44,7 +44,7 @@ public class CustomerController {
         customerEntity.setPassword(signupCustomerRequest.getPassword());
         customerEntity.setContactNumber(signupCustomerRequest.getContactNumber());
         // Handle the response object that will be send to the caller
-        final CustomerEntity createdCustomerEntity = customerService.signup(customerEntity);
+        final CustomerEntity createdCustomerEntity = customerService.saveCustomer(customerEntity);
         SignupCustomerResponse customerResponse = new SignupCustomerResponse().id(createdCustomerEntity.getUuid()).status("CUSTOMER SUCCESSFULLY REGISTERED");
         return new ResponseEntity<SignupCustomerResponse>(customerResponse, HttpStatus.CREATED);
     }
@@ -69,7 +69,7 @@ public class CustomerController {
         }catch(Exception e) {
             throw new AuthenticationFailedException("ATH-003", "Incorrect format of decoded customer name and password");
         }
-        final CustomerAuthEntity customerAuthEntity = customerService.login(decodedArray[0], decodedArray[1]);
+        final CustomerAuthEntity customerAuthEntity = customerService.authenticate(decodedArray[0], decodedArray[1]);
         final CustomerEntity customerEntity = customerAuthEntity.getCustomer();
 
         final HttpHeaders headers = new HttpHeaders();

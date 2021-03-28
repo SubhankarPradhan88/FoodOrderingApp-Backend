@@ -36,12 +36,17 @@ public class StateEntity implements Serializable {
     @Size(max = 30)
     private String stateName;
 
-    public StateEntity() {}
-
-    public StateEntity(@NotNull @Size(max = 200) String uuid, @Size(max = 30) String stateName) {
-        this.uuid = uuid;
+//    public StateEntity(@NotNull @Size(max = 200) String uuid, @Size(max = 30) String stateName) {
+//        this.uuid = uuid;
+//        this.stateName = stateName;
+//    }
+    public StateEntity(String stateUuid, String stateName) {
+        this.uuid = stateUuid;
         this.stateName = stateName;
+        return;
     }
+
+    public StateEntity() {}
 
     public Integer getId() {
         return id;
@@ -61,6 +66,10 @@ public class StateEntity implements Serializable {
 
     public String getStateName() {
         return stateName;
+    }
+
+    public void setStateUuid(String stateUuid) {
+        this.uuid = stateUuid;
     }
 
     public void setStateName(String stateName) {

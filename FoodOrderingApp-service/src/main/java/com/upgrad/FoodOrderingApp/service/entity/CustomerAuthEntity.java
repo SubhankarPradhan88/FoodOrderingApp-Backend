@@ -12,10 +12,10 @@ import java.time.ZonedDateTime;
 @Entity
 @Table(name = "customer_auth")
 @NamedQueries({
-        @NamedQuery(name = "cutomerAuthByAccessToken", query = "select c from CustomerAuthTokenEntity c where c.accessToken=:access_token")
+        @NamedQuery(name = "cutomerAuthByAccessToken", query = "select c from CustomerAuthEntity c where c.accessToken=:access_token")
 })
 
-public class CustomerAuthTokenEntity {
+public class CustomerAuthEntity {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)

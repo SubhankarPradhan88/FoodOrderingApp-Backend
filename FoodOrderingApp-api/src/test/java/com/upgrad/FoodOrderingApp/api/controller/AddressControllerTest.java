@@ -6,11 +6,10 @@ import com.upgrad.FoodOrderingApp.api.model.AddressListResponse;
 import com.upgrad.FoodOrderingApp.api.model.StatesList;
 import com.upgrad.FoodOrderingApp.api.model.StatesListResponse;
 import com.upgrad.FoodOrderingApp.service.businness.AddressService;
-import com.upgrad.FoodOrderingApp.service.businness.CustomerService;
+import com.upgrad.FoodOrderingApp.service.businness.CustomerService_Old;
 import com.upgrad.FoodOrderingApp.service.entity.AddressEntity;
 import com.upgrad.FoodOrderingApp.service.entity.CustomerEntity;
 import com.upgrad.FoodOrderingApp.service.entity.StateEntity;
-import com.upgrad.FoodOrderingApp.service.exception.AddressNotFoundException;
 import com.upgrad.FoodOrderingApp.service.exception.AuthorizationFailedException;
 import com.upgrad.FoodOrderingApp.service.exception.SaveAddressException;
 import org.junit.Test;
@@ -48,14 +47,14 @@ public class AddressControllerTest {
     private AddressService mockAddressService;
 
     @MockBean
-    private CustomerService mockCustomerService;
+    private CustomerService_Old mockCustomerServiceOld;
 
     // ------------------------------------------ POST /address ------------------------------------------
 
     //This test case passes when the address is successfully saved.
     @Test
     public void shouldSaveAddress() throws Exception {
-        when(mockCustomerService.getCustomer("database_accesstoken2")).thenReturn(new CustomerEntity());
+        when(mockCustomerServiceOld.getCustomer("database_accesstoken2")).thenReturn(new CustomerEntity());
         when(mockAddressService.getStateByUUID("testUUID")).thenReturn(new StateEntity());
 
         final AddressEntity addressEntity = new AddressEntity();
@@ -70,7 +69,7 @@ public class AddressControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("id").value("randomUuid001"))
                 .andExpect(jsonPath("status").value("ADDRESS SUCCESSFULLY REGISTERED"));
-        verify(mockCustomerService, times(1)).getCustomer("database_accesstoken2");
+        verify(mockCustomerServiceOld, times(1)).getCustomer("database_accesstoken2");
         verify(mockAddressService, times(1)).getStateByUUID("testUUID");
         verify(mockAddressService, times(1)).saveAddress(any(), any());
     }
@@ -78,7 +77,7 @@ public class AddressControllerTest {
     //This test case passes when you have handled the exception of trying to save an address with non existing access-token.
     @Test
     public void shouldNotSaveAddressWithNonExistingAccessToken() throws Exception {
-        when(mockCustomerService.getCustomer("non_existing_access_token"))
+        when(mockCustomerServiceOld.getCustomer("non_existing_access_token"))
                 .thenThrow(new AuthorizationFailedException("ATHR-001", "Customer is not Logged in."));
 
         mockMvc
@@ -87,7 +86,7 @@ public class AddressControllerTest {
                         .header("authorization", "Bearer non_existing_access_token"))
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("code").value("ATHR-001"));
-        verify(mockCustomerService, times(1)).getCustomer("non_existing_access_token");
+        verify(mockCustomerServiceOld, times(1)).getCustomer("non_existing_access_token");
         verify(mockAddressService, times(0)).getStateByUUID(anyString());
         verify(mockAddressService, times(0)).saveAddress(any(), any());
     }
@@ -95,7 +94,7 @@ public class AddressControllerTest {
     //This test case passes when you have handled the exception of trying to save an address with signed out user.
     @Test
     public void shouldNotSaveAddressWithSignedOutUser() throws Exception {
-        when(mockCustomerService.getCustomer("database_accesstoken"))
+        when(mockCustomerServiceOld.getCustomer("database_accesstoken"))
                 .thenThrow(new AuthorizationFailedException("ATHR-002", "Customer is logged out. Log in again to access this endpoint."));
 
         mockMvc
@@ -104,7 +103,7 @@ public class AddressControllerTest {
                         .header("authorization", "Bearer database_accesstoken"))
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("code").value("ATHR-002"));
-        verify(mockCustomerService, times(1)).getCustomer("database_accesstoken");
+        verify(mockCustomerServiceOld, times(1)).getCustomer("database_accesstoken");
         verify(mockAddressService, times(0)).getStateByUUID(anyString());
         verify(mockAddressService, times(0)).saveAddress(any(), any());
     }
@@ -113,7 +112,7 @@ public class AddressControllerTest {
     // expired.
     @Test
     public void shouldNotSaveAddressWithExpiredSessionUser() throws Exception {
-        when(mockCustomerService.getCustomer("database_accesstoken1"))
+        when(mockCustomerServiceOld.getCustomer("database_accesstoken1"))
                 .thenThrow(new AuthorizationFailedException("ATHR-003", "Your session is expired. Log in again to access this endpoint."));
 
         mockMvc
@@ -122,7 +121,7 @@ public class AddressControllerTest {
                         .header("authorization", "Bearer database_accesstoken1"))
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("code").value("ATHR-003"));
-        verify(mockCustomerService, times(1)).getCustomer("database_accesstoken1");
+        verify(mockCustomerServiceOld, times(1)).getCustomer("database_accesstoken1");
         verify(mockAddressService, times(0)).getStateByUUID(anyString());
         verify(mockAddressService, times(0)).saveAddress(any(), any());
     }
@@ -148,7 +147,7 @@ public class AddressControllerTest {
     //This test case passes when you have handled the exception of trying to save an address with empty address field.
     @Test
     public void shouldNotSaveAddressWithEmptyAddressField() throws Exception {
-        when(mockCustomerService.getCustomer("database_accesstoken2")).thenReturn(new CustomerEntity());
+        when(mockCustomerServiceOld.getCustomer("database_accesstoken2")).thenReturn(new CustomerEntity());
         when(mockAddressService.getStateByUUID("testUUID")).thenReturn(new StateEntity());
         when(mockAddressService.saveAddress(any(), any())).thenThrow(new SaveAddressException("SAR-001", "No field can be empty"));
 
@@ -159,7 +158,7 @@ public class AddressControllerTest {
                         .content("{\"flat_building_name\":\"xyz\", \"locality\":\"abc\", \"city\":\"\", \"pincode\":\"123456\", \"state_uuid\":\"testUUID\"}"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("code").value("SAR-001"));
-        verify(mockCustomerService, times(1)).getCustomer("database_accesstoken2");
+        verify(mockCustomerServiceOld, times(1)).getCustomer("database_accesstoken2");
         verify(mockAddressService, times(1)).getStateByUUID("testUUID");
         verify(mockAddressService, times(1)).saveAddress(any(), any());
     }
@@ -167,7 +166,7 @@ public class AddressControllerTest {
     //This test case passes when you have handled the exception of trying to save an address with incorrect pincode.
     @Test
     public void shouldNotSaveAddressWithEmptyWrongPinCode() throws Exception {
-        when(mockCustomerService.getCustomer("database_accesstoken2")).thenReturn(new CustomerEntity());
+        when(mockCustomerServiceOld.getCustomer("database_accesstoken2")).thenReturn(new CustomerEntity());
         when(mockAddressService.getStateByUUID("testUUID")).thenReturn(new StateEntity());
         when(mockAddressService.saveAddress(any(), any())).thenThrow(new SaveAddressException("SAR-002", "Invalid pincode"));
 
@@ -178,7 +177,7 @@ public class AddressControllerTest {
                         .content("{\"flat_building_name\":\"xyz\", \"locality\":\"abc\", \"city\":\"pqr\", \"pincode\":\"\", \"state_uuid\":\"testUUID\"}"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("code").value("SAR-002"));
-        verify(mockCustomerService, times(1)).getCustomer("database_accesstoken2");
+        verify(mockCustomerServiceOld, times(1)).getCustomer("database_accesstoken2");
         verify(mockAddressService, times(1)).getStateByUUID("testUUID");
         verify(mockAddressService, times(1)).saveAddress(any(), any());
     }
@@ -190,7 +189,7 @@ public class AddressControllerTest {
     @Test
     public void shouldDeleteAddress() throws Exception {
         final CustomerEntity customerEntity = new CustomerEntity();
-        when(mockCustomerService.getCustomer("database_accesstoken2")).thenReturn(customerEntity);
+        when(mockCustomerServiceOld.getCustomer("database_accesstoken2")).thenReturn(customerEntity);
 
         final AddressEntity addressEntity = new AddressEntity();
         when(mockAddressService.getAddressByUUID("82849cd5-106e-4b34-b9bf-94954c6ff527", customerEntity)).thenReturn(addressEntity);
@@ -208,7 +207,7 @@ public class AddressControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("id").value(uuid))
                 .andExpect(jsonPath("status").value("ADDRESS DELETED SUCCESSFULLY"));
-        verify(mockCustomerService, times(1)).getCustomer("database_accesstoken2");
+        verify(mockCustomerServiceOld, times(1)).getCustomer("database_accesstoken2");
         verify(mockAddressService, times(1)).getAddressByUUID("82849cd5-106e-4b34-b9bf-94954c6ff527", customerEntity);
         verify(mockAddressService, times(1)).deleteAddress(addressEntity);
     }
@@ -216,7 +215,7 @@ public class AddressControllerTest {
     //This test case passes when you have handled the exception of trying to delete an address with non existing access-token.
     @Test
     public void shouldNotDeleteAddressWithNonExistingAccessToken() throws Exception {
-        when(mockCustomerService.getCustomer("non_existing_access_token"))
+        when(mockCustomerServiceOld.getCustomer("non_existing_access_token"))
                 .thenThrow(new AuthorizationFailedException("ATHR-001", "Customer is not Logged in."));
 
         mockMvc
@@ -225,7 +224,7 @@ public class AddressControllerTest {
                         .header("authorization", "Bearer non_existing_access_token"))
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("code").value("ATHR-001"));
-        verify(mockCustomerService, times(1)).getCustomer("non_existing_access_token");
+        verify(mockCustomerServiceOld, times(1)).getCustomer("non_existing_access_token");
         verify(mockAddressService, times(0)).getAddressByUUID(anyString(), any());
         verify(mockAddressService, times(0)).deleteAddress(any());
     }
@@ -233,7 +232,7 @@ public class AddressControllerTest {
     //This test case passes when you have handled the exception of trying to delete an address with a signed out user.
     @Test
     public void shouldNotDeleteAddressWithSignedOutUser() throws Exception {
-        when(mockCustomerService.getCustomer("database_accesstoken"))
+        when(mockCustomerServiceOld.getCustomer("database_accesstoken"))
                 .thenThrow(new AuthorizationFailedException("ATHR-002", "Customer is logged out. Log in again to access this endpoint."));
 
         mockMvc
@@ -242,7 +241,7 @@ public class AddressControllerTest {
                         .header("authorization", "Bearer database_accesstoken"))
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("code").value("ATHR-002"));
-        verify(mockCustomerService, times(1)).getCustomer("database_accesstoken");
+        verify(mockCustomerServiceOld, times(1)).getCustomer("database_accesstoken");
         verify(mockAddressService, times(0)).getAddressByUUID(anyString(), any());
         verify(mockAddressService, times(0)).deleteAddress(any());
     }
@@ -250,7 +249,7 @@ public class AddressControllerTest {
     //This test case passes when you have handled the exception of trying to delete an address with expired session user.
     @Test
     public void shouldNotDeleteAddressWithExpiredSessionUser() throws Exception {
-        when(mockCustomerService.getCustomer("database_accesstoken1"))
+        when(mockCustomerServiceOld.getCustomer("database_accesstoken1"))
                 .thenThrow(new AuthorizationFailedException("ATHR-003", "Your session is expired. Log in again to access this endpoint."));
 
         mockMvc
@@ -259,7 +258,7 @@ public class AddressControllerTest {
                         .header("authorization", "Bearer database_accesstoken1"))
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("code").value("ATHR-003"));
-        verify(mockCustomerService, times(1)).getCustomer("database_accesstoken1");
+        verify(mockCustomerServiceOld, times(1)).getCustomer("database_accesstoken1");
         verify(mockAddressService, times(0)).getAddressByUUID(anyString(), any());
         verify(mockAddressService, times(0)).deleteAddress(any());
     }
@@ -289,7 +288,7 @@ public class AddressControllerTest {
     @Test
     public void shouldNotDeleteAddressForWrongCustomer() throws Exception {
         final CustomerEntity customerEntity = new CustomerEntity();
-        when(mockCustomerService.getCustomer("database_accesstoken2")).thenReturn(customerEntity);
+        when(mockCustomerServiceOld.getCustomer("database_accesstoken2")).thenReturn(customerEntity);
         when(mockAddressService.getAddressByUUID("82849cd5-106e-4b34-b9bf-94954c6ff527", customerEntity))
                 .thenThrow(new AuthorizationFailedException("ATHR-004", "You are not authorized to view/update/delete any one else's address"));
 
@@ -300,7 +299,7 @@ public class AddressControllerTest {
                         .content("{\"flat_building_name\":\"xyz\", \"locality\":\"abc\", \"city\":\"pqr\", \"pincode\":\"100000\", \"state_uuid\":\"c860e78a-a29b-11e8-9a3a-720006ceb890\"}"))
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("code").value("ATHR-004"));
-        verify(mockCustomerService, times(1)).getCustomer("database_accesstoken2");
+        verify(mockCustomerServiceOld, times(1)).getCustomer("database_accesstoken2");
         verify(mockAddressService, times(1)).getAddressByUUID("82849cd5-106e-4b34-b9bf-94954c6ff527", customerEntity);
         verify(mockAddressService, times(0)).deleteAddress(any());
     }
@@ -311,7 +310,7 @@ public class AddressControllerTest {
     @Test
     public void shouldGetAllAddresses() throws Exception {
         final CustomerEntity customerEntity = new CustomerEntity();
-        when(mockCustomerService.getCustomer("database_accesstoken2")).thenReturn(customerEntity);
+        when(mockCustomerServiceOld.getCustomer("database_accesstoken2")).thenReturn(customerEntity);
 
         final AddressEntity addressEntity = new AddressEntity();
         final String addressUuid = UUID.randomUUID().toString();
@@ -343,14 +342,14 @@ public class AddressControllerTest {
         assertEquals(addressList.getState().getStateName(), "state");
         assertEquals(addressList.getId().toString(), addressUuid);
 
-        verify(mockCustomerService, times(1)).getCustomer("database_accesstoken2");
+        verify(mockCustomerServiceOld, times(1)).getCustomer("database_accesstoken2");
         verify(mockAddressService, times(1)).getAllAddress(customerEntity);
     }
 
     //This test case passes when you have handled the exception of trying to fetch addresses for any customer with non existing access-token.
     @Test
     public void shouldNotGetAllAddressesWithNonExistingAccessToken() throws Exception {
-        when(mockCustomerService.getCustomer("non_existing_access_token"))
+        when(mockCustomerServiceOld.getCustomer("non_existing_access_token"))
                 .thenThrow(new AuthorizationFailedException("ATHR-001", "Customer is not Logged in."));
 
         mockMvc
@@ -359,7 +358,7 @@ public class AddressControllerTest {
                         .header("authorization", "Bearer non_existing_access_token"))
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("code").value("ATHR-001"));
-        verify(mockCustomerService, times(1)).getCustomer("non_existing_access_token");
+        verify(mockCustomerServiceOld, times(1)).getCustomer("non_existing_access_token");
         verify(mockAddressService, times(0)).getAllAddress(any());
     }
 
@@ -367,7 +366,7 @@ public class AddressControllerTest {
     // the customer is currently signed out.
     @Test
     public void shouldNotGetAllAddressesWithSignedOutUser() throws Exception {
-        when(mockCustomerService.getCustomer("database_accesstoken"))
+        when(mockCustomerServiceOld.getCustomer("database_accesstoken"))
                 .thenThrow(new AuthorizationFailedException("ATHR-002", "Customer is logged out. Log in again to access this endpoint."));
 
         mockMvc
@@ -376,7 +375,7 @@ public class AddressControllerTest {
                         .header("authorization", "Bearer database_accesstoken"))
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("code").value("ATHR-002"));
-        verify(mockCustomerService, times(1)).getCustomer("database_accesstoken");
+        verify(mockCustomerServiceOld, times(1)).getCustomer("database_accesstoken");
         verify(mockAddressService, times(0)).getAllAddress(any());
     }
 
@@ -384,7 +383,7 @@ public class AddressControllerTest {
     // the session of that customer is already expired.
     @Test
     public void shouldNotGetAllAddressesWithExpiredSessionUser() throws Exception {
-        when(mockCustomerService.getCustomer("database_accesstoken1"))
+        when(mockCustomerServiceOld.getCustomer("database_accesstoken1"))
                 .thenThrow(new AuthorizationFailedException("ATHR-003", "Your session is expired. Log in again to access this endpoint."));
 
         mockMvc
@@ -393,7 +392,7 @@ public class AddressControllerTest {
                         .header("authorization", "Bearer database_accesstoken1"))
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("code").value("ATHR-003"));
-        verify(mockCustomerService, times(1)).getCustomer("database_accesstoken1");
+        verify(mockCustomerServiceOld, times(1)).getCustomer("database_accesstoken1");
         verify(mockAddressService, times(0)).getAllAddress(any());
     }
 

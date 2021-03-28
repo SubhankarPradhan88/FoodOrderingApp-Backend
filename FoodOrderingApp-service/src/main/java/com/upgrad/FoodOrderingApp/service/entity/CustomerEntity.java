@@ -61,16 +61,6 @@ public class CustomerEntity implements Serializable {
         return new EqualsBuilder().append(this, obj).isEquals();
     }
 
-//    @ManyToMany(mappedBy = "customers")
-//    private List<AddressEntity> addresses;
-//
-//    public List<AddressEntity> getAddresses() {
-//        return addresses;
-//    }
-//    public void setAddresses(List<AddressEntity> addresses) {
-//        this.addresses = addresses;
-//    }
-
     public int getId() {
         return id;
     }

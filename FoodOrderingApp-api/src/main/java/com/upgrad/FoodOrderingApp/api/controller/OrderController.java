@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.time.ZonedDateTime;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -31,7 +30,7 @@ public class OrderController {
     OrderService orderService; // Handles all the Service Related Order.
 
     @Autowired
-    CustomerService customerService; // Handles all the Service Related Customer.
+    CustomerService_Old customerServiceOld; // Handles all the Service Related Customer.
 
     @Autowired
     PaymentService paymentService; // Handles all the Service Related Payment.
@@ -56,7 +55,7 @@ public class OrderController {
         String accessToken = authorization.split("Bearer ")[1];
 
         //Calls customerService getCustomerMethod to check the validity of the customer.this methods returns the customerEntity.
-        CustomerEntity customerEntity = customerService.getCustomer(accessToken);
+        CustomerEntity customerEntity = customerServiceOld.getCustomer(accessToken);
 
         //Calls getCouponByCouponName of orderService to get the coupon by name from DB
         CouponEntity couponEntity = orderService.getCouponByCouponName(couponName);
@@ -82,7 +81,7 @@ public class OrderController {
         String accessToken = authorization.split("Bearer ")[1];
 
         //Calls customerService getCustomerMethod to check the validity of the customer.this methods returns the customerEntity.
-        CustomerEntity customerEntity = customerService.getCustomer(accessToken);
+        CustomerEntity customerEntity = customerServiceOld.getCustomer(accessToken);
 
         //Calls orderService getCouponByCouponId method to get the CouponEntity by it uuid.
         CouponEntity couponEntity = orderService.getCouponByCouponId(saveOrderRequest.getCouponId().toString());
@@ -150,7 +149,7 @@ public class OrderController {
         String accessToken = authorization.split("Bearer ")[1];
 
         //Calls customerService getCustomerMethod to check the validity of the customer.this methods returns the customerEntity.
-        CustomerEntity customerEntity = customerService.getCustomer(accessToken);
+        CustomerEntity customerEntity = customerServiceOld.getCustomer(accessToken);
 
         //Calls getOrdersByCustomers of orderService to get all the past orders of the customer.
         List<OrdersEntity> ordersEntities =  orderService.getOrdersByCustomers(customerEntity.getUuid());

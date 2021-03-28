@@ -2,7 +2,7 @@ package com.upgrad.FoodOrderingApp.api.controller;
 
 import com.upgrad.FoodOrderingApp.api.model.*;
 import com.upgrad.FoodOrderingApp.service.businness.AddressService;
-import com.upgrad.FoodOrderingApp.service.businness.CustomerService;
+import com.upgrad.FoodOrderingApp.service.businness.CustomerService_Old;
 import com.upgrad.FoodOrderingApp.service.common.UnexpectedException;
 import com.upgrad.FoodOrderingApp.service.dao.CustomerAuthDao;
 import com.upgrad.FoodOrderingApp.service.entity.AddressEntity;
@@ -25,7 +25,7 @@ import java.util.UUID;
 @RestController
 public class AddressController {
 
-    @Autowired private CustomerService customerService;
+    @Autowired private CustomerService_Old customerServiceOld;
 
     @Autowired private AddressService addressService;
 
@@ -54,7 +54,7 @@ public class AddressController {
         String accessToken = CustomerAuthDao.getBearerAuthToken(authorization);
 
         // Get customer details on successful authentication of accessToken.
-        CustomerEntity customerEntity = customerService.getCustomer(accessToken);
+        CustomerEntity customerEntity = customerServiceOld.getCustomer(accessToken);
 
         // Generate Address entity for insert.
         AddressEntity address = new AddressEntity();
@@ -102,7 +102,7 @@ public class AddressController {
         final String accessToken = CustomerAuthDao.getBearerAuthToken(authorization);
 
         // Get customer details on successful authentication of accessToken.
-        final CustomerEntity customerEntity = customerService.getCustomer(accessToken);
+        final CustomerEntity customerEntity = customerServiceOld.getCustomer(accessToken);
 
         // Retrieve addresses from database.
         List<AddressEntity> sortedAddress = addressService.getAllAddress(customerEntity);
@@ -154,7 +154,7 @@ public class AddressController {
         String accessToken = CustomerAuthDao.getBearerAuthToken(authorization);
 
         // Get customer details on successful authentication of accessToken.
-        CustomerEntity customerEntity = customerService.getCustomer(accessToken);
+        CustomerEntity customerEntity = customerServiceOld.getCustomer(accessToken);
 
         // Get address entity of address to be deleted.
         AddressEntity address = addressService.getAddressByUUID(addressId, customerEntity);

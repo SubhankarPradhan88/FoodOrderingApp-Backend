@@ -127,23 +127,23 @@ public class AddressControllerTest {
         verify(mockAddressService, times(0)).saveAddress(any(), any());
     }
 
-//    //This test case passes when you have handled the exception of trying to save an address with incorrect state uuid.
-//    @Test
-//    public void shouldNotSaveAddressWithIncorrectStateId() throws Exception {
-//        when(mockCustomerService.getCustomer("database_accesstoken2")).thenReturn(new CustomerEntity());
-//        when(mockAddressService.getStateByUUID("testUUID")).thenThrow(new AddressNotFoundException("ANF-002", "No state by this state id"));
-//
-//        mockMvc
-//                .perform(post("/address?content=my_address")
-//                        .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
-//                        .header("authorization", "Bearer database_accesstoken2")
-//                        .content("{\"flat_building_name\":\"xyz\", \"locality\":\"abc\", \"city\":\"pqr\", \"pincode\":\"100000\", \"state_uuid\":\"testUUID\"}"))
-//                .andExpect(status().isNotFound())
-//                .andExpect(jsonPath("code").value("ANF-002"));
-//        verify(mockCustomerService, times(1)).getCustomer("database_accesstoken2");
-//        verify(mockAddressService, times(1)).getStateByUUID("testUUID");
-//        verify(mockAddressService, times(0)).saveAddress(any(), any());
-//    }
+    //This test case passes when you have handled the exception of trying to save an address with incorrect state uuid.
+    @Test
+    public void shouldNotSaveAddressWithIncorrectStateId() throws Exception {
+        when(mockCustomerService.getCustomer("database_accesstoken2")).thenReturn(new CustomerEntity());
+        when(mockAddressService.getStateByUUID("testUUID")).thenThrow(new AddressNotFoundException("ANF-002", "No state by this id"));
+
+        mockMvc
+                .perform(post("/address?content=my_address")
+                        .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                        .header("authorization", "Bearer database_accesstoken2")
+                        .content("{\"flat_building_name\":\"xyz\", \"locality\":\"abc\", \"city\":\"pqr\", \"pincode\":\"100000\", \"state_uuid\":\"testUUID\"}"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("code").value("ANF-002"));
+        verify(mockCustomerService, times(1)).getCustomer("database_accesstoken2");
+        verify(mockAddressService, times(1)).getStateByUUID("testUUID");
+        verify(mockAddressService, times(0)).saveAddress(any(), any());
+    }
 
     //This test case passes when you have handled the exception of trying to save an address with empty address field.
     @Test
@@ -264,25 +264,25 @@ public class AddressControllerTest {
         verify(mockAddressService, times(0)).deleteAddress(any());
     }
 
-//    //This test case passes when you have handled the exception of trying to delete an address with by providing an
-//    // address id that does not exist in the database.
-//    @Test
-//    public void shouldNotDeleteAddressIfNoAddressPresentAgainstGivenAddressId() throws Exception {
-//        final CustomerEntity customerEntity = new CustomerEntity();
-//        when(mockCustomerService.getCustomer("database_accesstoken2")).thenReturn(customerEntity);
-//        when(mockAddressService.getAddressByUUID("82849cd5-106e-4b34-b9bf-94954c6ff527", customerEntity))
-//                .thenThrow(new AddressNotFoundException("ANF-003", "No address by this id"));
-//
-//        mockMvc.perform(delete("/address/82849cd5-106e-4b34-b9bf-94954c6ff527")
-//                        .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
-//                        .header("authorization", "Bearer database_accesstoken2")
-//                        .content("{\"flat_building_name\":\"xyz\", \"locality\":\"abc\", \"city\":\"pqr\", \"pincode\":\"100000\", \"state_uuid\":\"c860e78a-a29b-11e8-9a3a-720006ceb890\"}"))
-//                .andExpect(status().isNotFound())
-//                .andExpect(jsonPath("code").value("ANF-003"));
-//        verify(mockCustomerService, times(1)).getCustomer("database_accesstoken2");
-//        verify(mockAddressService, times(1)).getAddressByUUID("82849cd5-106e-4b34-b9bf-94954c6ff527", customerEntity);
-//        verify(mockAddressService, times(0)).deleteAddress(any());
-//    }
+    //This test case passes when you have handled the exception of trying to delete an address with by providing an
+    // address id that does not exist in the database.
+    @Test
+    public void shouldNotDeleteAddressIfNoAddressPresentAgainstGivenAddressId() throws Exception {
+        final CustomerEntity customerEntity = new CustomerEntity();
+        when(mockCustomerService.getCustomer("database_accesstoken2")).thenReturn(customerEntity);
+        when(mockAddressService.getAddressByUUID("82849cd5-106e-4b34-b9bf-94954c6ff527", customerEntity))
+                .thenThrow(new AddressNotFoundException("ANF-003", "No address by this id"));
+
+        mockMvc.perform(delete("/address/82849cd5-106e-4b34-b9bf-94954c6ff527")
+                        .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                        .header("authorization", "Bearer database_accesstoken2")
+                        .content("{\"flat_building_name\":\"xyz\", \"locality\":\"abc\", \"city\":\"pqr\", \"pincode\":\"100000\", \"state_uuid\":\"c860e78a-a29b-11e8-9a3a-720006ceb890\"}"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("code").value("ANF-003"));
+        verify(mockCustomerService, times(1)).getCustomer("database_accesstoken2");
+        verify(mockAddressService, times(1)).getAddressByUUID("82849cd5-106e-4b34-b9bf-94954c6ff527", customerEntity);
+        verify(mockAddressService, times(0)).deleteAddress(any());
+    }
 
     //This test case passes when you have handled the exception of trying to delete an address of a different customer
     // other than the customer who is currently logged in.

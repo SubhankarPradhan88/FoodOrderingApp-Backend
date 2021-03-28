@@ -2,9 +2,11 @@ package com.upgrad.FoodOrderingApp.service.businness;
 
 import com.upgrad.FoodOrderingApp.service.common.UnexpectedException;
 import com.upgrad.FoodOrderingApp.service.dao.AddressDao;
+import com.upgrad.FoodOrderingApp.service.dao.OrderDao;
 import com.upgrad.FoodOrderingApp.service.dao.StateDao;
 import com.upgrad.FoodOrderingApp.service.entity.AddressEntity;
 import com.upgrad.FoodOrderingApp.service.entity.CustomerEntity;
+import com.upgrad.FoodOrderingApp.service.entity.OrdersEntity;
 import com.upgrad.FoodOrderingApp.service.entity.StateEntity;
 import com.upgrad.FoodOrderingApp.service.exception.AddressNotFoundException;
 import com.upgrad.FoodOrderingApp.service.exception.AuthorizationFailedException;
@@ -27,6 +29,8 @@ public class AddressService {
     @Autowired AddressDao addressDao;
 
     @Autowired StateDao stateDao;
+
+    @Autowired OrderDao orderDao; //Handles all Data of Orders Entity
 
     /**
      * Method takes AddressEntity/ StateEntity and stores it on the database
@@ -126,12 +130,26 @@ public class AddressService {
     /**
      * Method takes AddressEntity and delete AddressEntity from the database
      *
-     * @param address is AddressEntity to be deleted
+     * @param addressEntity is AddressEntity to be deleted
      * @return AddressEntity of the deleted address
      */
     @Transactional(propagation = Propagation.REQUIRED)
-    public AddressEntity deleteAddress(AddressEntity address) {
-        return addressDao.deleteAddress(address);
+    public AddressEntity deleteAddress(AddressEntity addressEntity) {
+        //Calls getOrdersByAddress of orderDao to orders with corresponding address.
+        List<OrdersEntity> ordersEntities = orderDao.getOrdersByAddress(addressEntity);
+
+        if(ordersEntities == null||ordersEntities.isEmpty()) { //Checking if no orders are present with this address.
+            //Calls deleteAddress of addressDao to delete the corresponding address.
+            AddressEntity deletedAddressEntity = addressDao.deleteAddress(addressEntity);
+            return deletedAddressEntity;
+        }else{
+            //Updating the active status
+            addressEntity.setActive(0);
+
+            //Calls updateAddressActiveStatus method of addressDao to update address active status.
+            AddressEntity updatedAddressActiveStatus =  addressDao.updateAddressActiveStatus(addressEntity);
+            return updatedAddressActiveStatus;
+        }
     }
 
     /**

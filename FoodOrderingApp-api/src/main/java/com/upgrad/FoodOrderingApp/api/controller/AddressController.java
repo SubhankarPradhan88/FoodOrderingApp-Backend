@@ -16,7 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import static com.upgrad.FoodOrderingApp.service.common.GenericErrorCode.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -48,7 +48,7 @@ public class AddressController {
     public ResponseEntity<SaveAddressResponse> saveAddress(
             @RequestHeader("authorization") final String authorization,
             @RequestBody(required = false) SaveAddressRequest saveAddressRequest)
-            throws AuthorizationFailedException, AddressNotFoundException, SaveAddressException {
+            throws AuthorizationFailedException, SaveAddressException, AddressNotFoundException {
 
         // Get Bearer Authorization Token.
         String accessToken = CustomerAuthDao.getBearerAuthToken(authorization);
@@ -66,17 +66,22 @@ public class AddressController {
         address.setUuid(UUID.randomUUID().toString());
 
         address.setActive(1);
-        StateEntity stateEntity = addressService.getStateByUUID(saveAddressRequest.getStateUuid());
+        StateEntity stateEntity = null;
+        try {
+             stateEntity = addressService.getStateByUUID(saveAddressRequest.getStateUuid());
+        } catch (AddressNotFoundException e) {
+            // Return error if State not found
+            throw new AddressNotFoundException(ANF_002.getCode(), ANF_002.getDefaultMessage());
+        }
+
         address.setCustomers(customerEntity);
 
-        // Store Address entity in the database.
         AddressEntity savedAddress = addressService.saveAddress(address, stateEntity);
 
         // Map persisted Address Entity to Response Object.
-        SaveAddressResponse addressResponse =
-                new SaveAddressResponse()
-                        .id(savedAddress.getUuid())
-                        .status("ADDRESS SUCCESSFULLY REGISTERED");
+        SaveAddressResponse addressResponse = new SaveAddressResponse()
+                .id(savedAddress.getUuid())
+                .status("ADDRESS SUCCESSFULLY REGISTERED");
 
         return new ResponseEntity<SaveAddressResponse>(addressResponse, HttpStatus.CREATED);
     }
@@ -157,9 +162,12 @@ public class AddressController {
         CustomerEntity customerEntity = customerServiceOld.getCustomer(accessToken);
 
         // Get address entity of address to be deleted.
-        AddressEntity address = addressService.getAddressByUUID(addressId, customerEntity);
-        if (address == null){//Checking if null throws corresponding exception.
-            throw new AddressNotFoundException("ANF-003", "No address by this id");
+        AddressEntity address = null;
+        try {
+            address = addressService.getAddressByUUID(addressId, customerEntity);
+        } catch (AddressNotFoundException e) {
+            // Throw error if address not found
+            throw new AddressNotFoundException(ANF_003.getCode(), ANF_003.getDefaultMessage());
         }
 
         AddressEntity deletedAddress;

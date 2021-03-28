@@ -40,9 +40,6 @@ public class CustomerService {
         if(isContactNumberInUse(customerEntity)) {
             throw new SignUpRestrictedException("SGR-001","This contact number is already registered! Try other contact number.");
         }
-        if(!validateCustomer(customerEntity)) {
-            throw new SignUpRestrictedException("SGR-005", "Except last name all fields should be filled");
-        }
         if(!isValidEmailID(customerEntity)) {
             throw new SignUpRestrictedException("SGR-002", "Invalid email-id format!");
         }
@@ -51,6 +48,9 @@ public class CustomerService {
         }
         if(!isValidPassword(customerEntity.getPassword())) {
             throw new SignUpRestrictedException("SGR-004", "Weak password!");
+        }
+        if(!validateCustomer(customerEntity)) {
+            throw new SignUpRestrictedException("SGR-005", "Except last name all fields should be filled");
         }
         // Encrypted password and salt assigned to the customer that is being created.
         final String[] encryptedText = cryptographyProvider.encrypt(customerEntity.getPassword());
@@ -196,10 +196,25 @@ public class CustomerService {
      */
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public CustomerEntity updateCustomer(CustomerEntity customerEntity) throws UpdateCustomerException {
+    public CustomerEntity updateCustomer(CustomerEntity customerEntity, String accessToken) throws UpdateCustomerException, AuthorizationFailedException {
 
         //  Getting the CustomerEntity by getCustomerByUuid of customerDao
         CustomerEntity customerToBeUpdated = customerDao.getCustomerByUuid(customerEntity.getUuid());
+        CustomerAuthEntity customerAuthEntity = customerDao.getCustomerAuthToken(accessToken);
+
+        if(customerEntity.getFirstName().trim() == "") {
+            throw new UpdateCustomerException("UCR-002", "First name field should not be empty");
+        }
+        if(customerAuthEntity == null) {
+            //if access token does not exist then throw ATHR-001
+            throw new AuthorizationFailedException("ATHR-001", "Customer is not Logged in.");
+        }else if (customerAuthEntity.getLogoutAt() != null) {
+            //if customer with this accestoken has already logged out then throw ATHR-002
+            throw new AuthorizationFailedException("ATHR-002", "Customer is logged out. Log in again to access this endpoint.");
+        }else if(ZonedDateTime.now().isAfter(customerAuthEntity.getExpiresAt())) {
+            //if expiry date of this token is already past the current date then throw ATHR-003
+            throw new AuthorizationFailedException("ATHR-003", "Your session is expired. Log in again to access this endpoint.");
+        }
 
         //  Setting the new details to the customer entity .
         customerToBeUpdated.setFirstName(customerEntity.getFirstName());

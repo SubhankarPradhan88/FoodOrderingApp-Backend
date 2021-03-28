@@ -129,15 +129,15 @@ public class CustomerController {
         // Access the accessToken from the request Header
         String accessToken = authorization.split("Bearer ")[1];
 
-        // Calls utilityService getCustomer method to check the validity of the customer. This methods returns the customerEntity to be updated.
+        // Calls customerService getCustomer method to check the validity of the customer. This methods returns the customerEntity to be updated.
         CustomerEntity toBeUpdatedCustomerEntity = customerService.getCustomer(accessToken);
 
         // Update the customer entity
         toBeUpdatedCustomerEntity.setFirstName(updateCustomerRequest.getFirstName());
         toBeUpdatedCustomerEntity.setLastName(updateCustomerRequest.getLastName());
 
-        //  Calls utilityService updateCustomer to persist the updated Entity.
-        CustomerEntity updatedCustomerEntity = customerService.updateCustomer(toBeUpdatedCustomerEntity);
+        //  Calls customerService updateCustomer to persist the updated Entity.
+        CustomerEntity updatedCustomerEntity = customerService.updateCustomer(toBeUpdatedCustomerEntity, accessToken);
 
         //  Creating the Update CustomerResponse with updated details.
         UpdateCustomerResponse updateCustomerResponse = new UpdateCustomerResponse()

@@ -16,13 +16,12 @@ import java.util.stream.Collectors;
 public class CategoryService {
 
     @Autowired
+    RestaurantService restaurantService;
+    @Autowired
     private CategoryDao categoryDao;
 
-    @Autowired
-    RestaurantService restaurantService;
-
     // A Method which is for  getAllCategories endpoint
-    public List<CategoryEntity> getAllCategoriesOrderedByName(){
+    public List<CategoryEntity> getAllCategoriesOrderedByName() {
         return categoryDao.getAllCategoriesOrderedByName().stream()
                 .sorted(Comparator.comparing(CategoryEntity::getCategoryName))
                 .collect(Collectors.toList());

@@ -15,21 +15,21 @@ public class CategoryDao {
     private EntityManager entityManager;
 
     //List all categories availabele in DB
-    public List<CategoryEntity> getAllCategoriesOrderedByName(){
+    public List<CategoryEntity> getAllCategoriesOrderedByName() {
         try {
             return entityManager.createNamedQuery("allCategories", CategoryEntity.class).getResultList();
-        } catch(NoResultException nre) {
+        } catch (NoResultException nre) {
             return null;
         }
     }
 
 
     //Get lis of items in particular category
-    public CategoryEntity getCategoryByUUId(final String categoryUUId){
+    public CategoryEntity getCategoryByUUId(final String categoryUUId) {
         try {
             return entityManager.createNamedQuery("categoryByUuid", CategoryEntity.class).setParameter("uuid", categoryUUId)
                     .getSingleResult();
-        } catch(NoResultException nre) {
+        } catch (NoResultException nre) {
             return null;
         }
     }

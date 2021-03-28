@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.List;
 
@@ -25,7 +26,7 @@ public class RestaurantService {
 
 
     //List all restaurants sorted by rating - Descending order
-    public List<RestaurantEntity> restaurantsByRating(){
+    public List<RestaurantEntity> restaurantsByRating() {
         return this.restaurantDao.restaurantsByRating();
     }
 
@@ -33,7 +34,7 @@ public class RestaurantService {
     public List<RestaurantEntity> restaurantsByName(String restaurantName) throws RestaurantNotFoundException {
 
         // Throw exception if path variable(restaurant_name) is empty
-        if(restaurantName == null || restaurantName.isEmpty() || restaurantName.equalsIgnoreCase("\"\"")){
+        if (restaurantName == null || restaurantName.isEmpty() || restaurantName.equalsIgnoreCase("\"\"")) {
             throw new RestaurantNotFoundException("RNF-003", "Restaurant name field should not be empty");
         }
         return restaurantDao.restaurantsByName(restaurantName);
@@ -48,7 +49,7 @@ public class RestaurantService {
 
         CategoryEntity categoryEntity = categoryService.getCategoryById(categoryId);
 
-        if(categoryEntity == null) {
+        if (categoryEntity == null) {
             throw new CategoryNotFoundException("CNF-002", "No category by this id");
         }
 
@@ -84,10 +85,10 @@ public class RestaurantService {
         //Re-calculating average rating including the new rating
         //Also updating number of customers ratings
         Double newAverageRating = (
-                ((restaurantEntity.getNumberCustomersRated()*restaurantEntity.getCustomerRating())+newRating)/
-                        (restaurantEntity.getNumberCustomersRated()+1));
+                ((restaurantEntity.getNumberCustomersRated() * restaurantEntity.getCustomerRating()) + newRating) /
+                        (restaurantEntity.getNumberCustomersRated() + 1));
         restaurantEntity.setNumberCustomersRated(restaurantEntity.getNumberCustomersRated() + 1);
-
+        newAverageRating = BigDecimal.valueOf(newAverageRating).setScale(2).doubleValue();
         restaurantEntity.setCustomerRating(newAverageRating);
         return restaurantDao.updateRestaurantEntity(restaurantEntity);
     }

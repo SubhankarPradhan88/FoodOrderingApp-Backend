@@ -28,6 +28,7 @@ public class CategoryController {
 
     /**
      * endpoint to get the category by ID
+     *
      * @param category_id
      * @return the list of restaurants with the provided category id
      * @throws CategoryNotFoundException
@@ -35,7 +36,8 @@ public class CategoryController {
     @RequestMapping(method = RequestMethod.GET, path = "/category/{category_id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<CategoryDetailsResponse> getCategoryById(@PathVariable String category_id) throws CategoryNotFoundException {
 
-        CategoryEntity categoryEntity = categoryService.getCategoryById(category_id.toLowerCase());
+        CategoryEntity categoryEntity =
+                categoryService.getCategoryById(category_id.trim().toLowerCase());
 
 
         CategoryDetailsResponse categoryDetailsResponse = new CategoryDetailsResponse().id(UUID.fromString(categoryEntity.getUuid())).categoryName(categoryEntity.getCategoryName());
@@ -55,7 +57,6 @@ public class CategoryController {
 
 
     /**
-     *
      * @return the  list of all categories from the DB
      */
     @RequestMapping(method = RequestMethod.GET, path = "/category", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)

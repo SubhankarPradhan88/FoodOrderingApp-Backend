@@ -181,7 +181,7 @@ public class OrderController {
                 });
                 //Creating OrderListAddressState to add in the address
                 OrderListAddressState orderListAddressState = new OrderListAddressState()
-                        .id(UUID.fromString(ordersEntity.getAddress().getState().getStateName()))
+                        .id(UUID.fromString(ordersEntity.getAddress().getState().getUuid()))
                         .stateName(ordersEntity.getAddress().getState().getStateName());
 
                 //Creating OrderListAddress to add address to the orderList

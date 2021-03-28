@@ -26,5 +26,8 @@ public class CategoryItemDao {
         }catch (NoResultException nre){
             return null;
         }
+
     }
 }
+
+

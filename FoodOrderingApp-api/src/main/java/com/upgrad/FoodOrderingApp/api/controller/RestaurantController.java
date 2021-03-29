@@ -4,7 +4,7 @@ import com.upgrad.FoodOrderingApp.api.model.*;
 import com.upgrad.FoodOrderingApp.service.businness.CategoryService;
 import com.upgrad.FoodOrderingApp.service.businness.ItemService;
 import com.upgrad.FoodOrderingApp.service.businness.RestaurantService;
-import com.upgrad.FoodOrderingApp.service.businness.UtilityService;
+import com.upgrad.FoodOrderingApp.service.businness.CustomerService;
 import com.upgrad.FoodOrderingApp.service.entity.CategoryEntity;
 import com.upgrad.FoodOrderingApp.service.entity.CustomerEntity;
 import com.upgrad.FoodOrderingApp.service.entity.ItemEntity;
@@ -37,7 +37,7 @@ public class RestaurantController {
     private CategoryService categoryService;
 
     @Autowired
-    private UtilityService utilityService;
+    private CustomerService customerService;
 
     @Autowired
     private ItemService itemService;
@@ -270,7 +270,7 @@ public class RestaurantController {
         if (bearerToken.length == 1) {
             throw new AuthorizationFailedException("ATHR-005", "Use valid authorization format <Bearer accessToken>");
         } else {
-            customerEntity = utilityService.getCustomer(bearerToken[1]);
+            customerEntity = customerService.getCustomer(bearerToken[1]);
         }
 
         RestaurantEntity restaurantEntity = restaurantService.restaurantByUUID(restaurantId.trim());

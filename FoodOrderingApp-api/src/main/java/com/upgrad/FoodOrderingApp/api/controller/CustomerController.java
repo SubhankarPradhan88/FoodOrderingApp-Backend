@@ -34,8 +34,9 @@ public class CustomerController {
      */
 
     // Translate request model into entity model, and pass down the entity object to the business service, to persist the data in the DB
+    @CrossOrigin
     @RequestMapping(method = RequestMethod.POST, path = "/customer/signup", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<SignupCustomerResponse> signup(final SignupCustomerRequest signupCustomerRequest) throws SignUpRestrictedException {
+    public ResponseEntity<SignupCustomerResponse> signup(@RequestBody(required = false) final SignupCustomerRequest signupCustomerRequest) throws SignUpRestrictedException {
         final CustomerEntity customerEntity = new CustomerEntity();
         customerEntity.setUuid((UUID.randomUUID().toString()));
         customerEntity.setFirstName(signupCustomerRequest.getFirstName());
@@ -43,6 +44,21 @@ public class CustomerController {
         customerEntity.setEmail(signupCustomerRequest.getEmailAddress());
         customerEntity.setPassword(signupCustomerRequest.getPassword());
         customerEntity.setContactNumber(signupCustomerRequest.getContactNumber());
+
+        if (customerEntity.getFirstName() == null || customerEntity.getFirstName() == ""){
+            throw new SignUpRestrictedException("SGR-005","Except last name all fields should be filled");
+        }
+        if(customerEntity.getPassword() == null||customerEntity.getPassword() == ""){
+            throw new SignUpRestrictedException("SGR-005","Except last name all fields should be filled");
+        }
+        if (customerEntity.getEmailAddress() == null||customerEntity.getEmailAddress() == ""){
+            throw new SignUpRestrictedException("SGR-005","Except last name all fields should be filled");
+        }
+        if (customerEntity.getContactNumber() == null||customerEntity.getContactNumber() == ""){
+            throw new SignUpRestrictedException("SGR-005","Except last name all fields should be filled");
+        }
+
+
         // Handle the response object that will be send to the caller
         final CustomerEntity createdCustomerEntity = customerService.saveCustomer(customerEntity);
         SignupCustomerResponse customerResponse = new SignupCustomerResponse().id(createdCustomerEntity.getUuid()).status("CUSTOMER SUCCESSFULLY REGISTERED");

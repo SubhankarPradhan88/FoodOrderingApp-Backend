@@ -106,12 +106,15 @@ public class CustomerController {
      * @return LogoutResponse
      * @throws AuthorizationFailedException
      */
-
+    @CrossOrigin
     @RequestMapping(method = RequestMethod.POST, path = "/customer/logout", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<LogoutResponse> signOut(@RequestHeader("authorization") final String accessToken) throws AuthorizationFailedException {
-        final CustomerEntity customerEntity = customerService.logout(accessToken);
+        String accessTokenFinal = accessToken.split("Bearer ")[1];
+        CustomerAuthEntity customerEntity = customerService.logout(accessTokenFinal);
+        LogoutResponse logoutResponse = new LogoutResponse()
+                .id(customerEntity.getCustomer().getUuid())
+                .message("LOGGED OUT SUCCESSFULLY");
 
-        final LogoutResponse logoutResponse = new LogoutResponse().id(customerEntity.getUuid()).message("LOGGED OUT SUCCESSFULLY");
         return new ResponseEntity<LogoutResponse>(logoutResponse, HttpStatus.OK);
     }
 
@@ -139,6 +142,7 @@ public class CustomerController {
      * @return UpdateCustomerResponse
      * @throws UpdateCustomerException
      */
+    @CrossOrigin
     @RequestMapping(method = RequestMethod.PUT, path = "/customer", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<UpdateCustomerResponse> updateCustomerDetails(@RequestHeader("authorization") final String authorization,
                                                                         @RequestBody(required = false) UpdateCustomerRequest updateCustomerRequest) throws UpdateCustomerException, AuthorizationFailedException {

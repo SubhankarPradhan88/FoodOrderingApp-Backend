@@ -197,7 +197,7 @@ public class RestaurantController {
      * @return Restaurant with details based on given restaurant id
      * @throws RestaurantNotFoundException - When given restaurant id field is empty
      */
-    @RequestMapping(method = RequestMethod.GET, path = "/api/restaurant/{restaurant_id}", produces =
+    @RequestMapping(method = RequestMethod.GET, path = "/restaurant/{restaurant_id}", produces =
             MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<RestaurantDetailsResponse> getRestaurantByRestaurantID(@PathVariable(
             "restaurant_id") final String restaurantID) throws RestaurantNotFoundException {
@@ -258,7 +258,7 @@ public class RestaurantController {
      * @throws InvalidRatingException       - When the Rating value provided is invalid
      */
     @CrossOrigin
-    @RequestMapping(method = RequestMethod.PUT, path = "/api/restaurant/{restaurant_id}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = RequestMethod.PUT, path = "/restaurant/{restaurant_id}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<RestaurantUpdatedResponse> updateRestaurantDetails(
             @RequestParam(name = "customer_rating") final Double customerRating,
             @PathVariable("restaurant_id") final String restaurantId,

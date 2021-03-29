@@ -34,8 +34,9 @@ public class CustomerController {
      */
 
     // Translate request model into entity model, and pass down the entity object to the business service, to persist the data in the DB
+    @CrossOrigin
     @RequestMapping(method = RequestMethod.POST, path = "/customer/signup", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<SignupCustomerResponse> signup(final SignupCustomerRequest signupCustomerRequest) throws SignUpRestrictedException {
+    public ResponseEntity<SignupCustomerResponse> signup(@RequestBody(required = false) final SignupCustomerRequest signupCustomerRequest) throws SignUpRestrictedException {
         final CustomerEntity customerEntity = new CustomerEntity();
         customerEntity.setUuid((UUID.randomUUID().toString()));
         customerEntity.setFirstName(signupCustomerRequest.getFirstName());
@@ -43,6 +44,21 @@ public class CustomerController {
         customerEntity.setEmail(signupCustomerRequest.getEmailAddress());
         customerEntity.setPassword(signupCustomerRequest.getPassword());
         customerEntity.setContactNumber(signupCustomerRequest.getContactNumber());
+
+        if (customerEntity.getFirstName() == null || customerEntity.getFirstName() == ""){
+            throw new SignUpRestrictedException("SGR-005","Except last name all fields should be filled");
+        }
+        if(customerEntity.getPassword() == null||customerEntity.getPassword() == ""){
+            throw new SignUpRestrictedException("SGR-005","Except last name all fields should be filled");
+        }
+        if (customerEntity.getEmailAddress() == null||customerEntity.getEmailAddress() == ""){
+            throw new SignUpRestrictedException("SGR-005","Except last name all fields should be filled");
+        }
+        if (customerEntity.getContactNumber() == null||customerEntity.getContactNumber() == ""){
+            throw new SignUpRestrictedException("SGR-005","Except last name all fields should be filled");
+        }
+
+
         // Handle the response object that will be send to the caller
         final CustomerEntity createdCustomerEntity = customerService.saveCustomer(customerEntity);
         SignupCustomerResponse customerResponse = new SignupCustomerResponse().id(createdCustomerEntity.getUuid()).status("CUSTOMER SUCCESSFULLY REGISTERED");
@@ -90,12 +106,15 @@ public class CustomerController {
      * @return LogoutResponse
      * @throws AuthorizationFailedException
      */
-
+    @CrossOrigin
     @RequestMapping(method = RequestMethod.POST, path = "/customer/logout", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<LogoutResponse> signOut(@RequestHeader("authorization") final String accessToken) throws AuthorizationFailedException {
-        final CustomerEntity customerEntity = customerService.logout(accessToken);
+        String accessTokenFinal = accessToken.split("Bearer ")[1];
+        CustomerAuthEntity customerEntity = customerService.logout(accessTokenFinal);
+        LogoutResponse logoutResponse = new LogoutResponse()
+                .id(customerEntity.getCustomer().getUuid())
+                .message("LOGGED OUT SUCCESSFULLY");
 
-        final LogoutResponse logoutResponse = new LogoutResponse().id(customerEntity.getUuid()).message("LOGGED OUT SUCCESSFULLY");
         return new ResponseEntity<LogoutResponse>(logoutResponse, HttpStatus.OK);
     }
 
@@ -106,13 +125,29 @@ public class CustomerController {
      * @return UpdatePasswordResponse
      * @throws UpdateCustomerException
      */
-    @RequestMapping(method = RequestMethod.PUT, path = "/customer/password", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @CrossOrigin
+    @RequestMapping(method = RequestMethod.PUT, path = "/customer/password",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<UpdatePasswordResponse> updateCustomerPassword(@RequestHeader("authorization") final String accessToken,
-                                                                         @RequestBody UpdatePasswordRequest updatePasswordRequest) throws UpdateCustomerException, AuthorizationFailedException {
-        final CustomerEntity customerEntity = customerService.updateCustomerPassword(updatePasswordRequest.getOldPassword(),
-                updatePasswordRequest.getNewPassword(), accessToken);
+                                                                         @RequestBody(required = false) UpdatePasswordRequest updatePasswordRequest) throws UpdateCustomerException, AuthorizationFailedException {
 
-        final UpdatePasswordResponse response = new UpdatePasswordResponse().id(customerEntity.getUuid()).status("CUSTOMER PASSWORD UPDATED SUCCESSFULLY");
+        if (updatePasswordRequest.getOldPassword() == null || updatePasswordRequest.getOldPassword() == "") {
+            throw new UpdateCustomerException("UCR-003", "No field should be empty");
+        }
+
+        if (updatePasswordRequest.getNewPassword() == null || updatePasswordRequest.getNewPassword() == "") {
+            throw new UpdateCustomerException("UCR-003", "No field should be empty");
+        }
+
+
+        //Access the accessToken from the request Header
+        String accessTokenFinale = accessToken.split("Bearer ")[1];
+
+        CustomerEntity customerEntity = customerService.updateCustomerPassword(updatePasswordRequest.getOldPassword(),
+                updatePasswordRequest.getNewPassword(), accessTokenFinale);
+
+        final UpdatePasswordResponse response = new UpdatePasswordResponse()
+                .id(customerEntity.getUuid())
+                .status("CUSTOMER PASSWORD UPDATED SUCCESSFULLY");
         return new ResponseEntity<UpdatePasswordResponse>(response, HttpStatus.OK);
     }
 
@@ -123,9 +158,15 @@ public class CustomerController {
      * @return UpdateCustomerResponse
      * @throws UpdateCustomerException
      */
+    @CrossOrigin
     @RequestMapping(method = RequestMethod.PUT, path = "/customer", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<UpdateCustomerResponse> updateCustomerDetails(@RequestHeader("authorization") final String authorization,
                                                                         @RequestBody(required = false) UpdateCustomerRequest updateCustomerRequest) throws UpdateCustomerException, AuthorizationFailedException {
+
+        if (updateCustomerRequest.getFirstName() == null || updateCustomerRequest.getFirstName() == "") {
+            throw new UpdateCustomerException("UCR-002", "First name field should not be empty");
+        }
+
         // Access the accessToken from the request Header
         String accessToken = authorization.split("Bearer ")[1];
 

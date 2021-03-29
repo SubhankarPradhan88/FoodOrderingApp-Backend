@@ -68,5 +68,11 @@ public class CustomerAuthDao {
             }
         }
     }
+
+    //To upadte CustomerAuthEntity in the DB
+    public CustomerAuthEntity customerLogout (CustomerAuthEntity customerAuthEntity){
+        entityManager.merge(customerAuthEntity);
+        return customerAuthEntity;
+    }
 }
 

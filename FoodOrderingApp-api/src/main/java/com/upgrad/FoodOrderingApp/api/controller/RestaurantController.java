@@ -4,7 +4,7 @@ import com.upgrad.FoodOrderingApp.api.model.*;
 import com.upgrad.FoodOrderingApp.service.businness.CategoryService;
 import com.upgrad.FoodOrderingApp.service.businness.ItemService;
 import com.upgrad.FoodOrderingApp.service.businness.RestaurantService;
-import com.upgrad.FoodOrderingApp.service.businness.UtilityService;
+import com.upgrad.FoodOrderingApp.service.businness.CustomerService;
 import com.upgrad.FoodOrderingApp.service.entity.CategoryEntity;
 import com.upgrad.FoodOrderingApp.service.entity.CustomerEntity;
 import com.upgrad.FoodOrderingApp.service.entity.ItemEntity;
@@ -37,7 +37,7 @@ public class RestaurantController {
     private CategoryService categoryService;
 
     @Autowired
-    private UtilityService utilityService;
+    private CustomerService customerService;
 
     @Autowired
     private ItemService itemService;
@@ -197,7 +197,7 @@ public class RestaurantController {
      * @return Restaurant with details based on given restaurant id
      * @throws RestaurantNotFoundException - When given restaurant id field is empty
      */
-    @RequestMapping(method = RequestMethod.GET, path = "/api/restaurant/{restaurant_id}", produces =
+    @RequestMapping(method = RequestMethod.GET, path = "/restaurant/{restaurant_id}", produces =
             MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<RestaurantDetailsResponse> getRestaurantByRestaurantID(@PathVariable(
             "restaurant_id") final String restaurantID) throws RestaurantNotFoundException {
@@ -258,7 +258,7 @@ public class RestaurantController {
      * @throws InvalidRatingException       - When the Rating value provided is invalid
      */
     @CrossOrigin
-    @RequestMapping(method = RequestMethod.PUT, path = "/api/restaurant/{restaurant_id}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = RequestMethod.PUT, path = "/restaurant/{restaurant_id}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<RestaurantUpdatedResponse> updateRestaurantDetails(
             @RequestParam(name = "customer_rating") final Double customerRating,
             @PathVariable("restaurant_id") final String restaurantId,
@@ -270,7 +270,7 @@ public class RestaurantController {
         if (bearerToken.length == 1) {
             throw new AuthorizationFailedException("ATHR-005", "Use valid authorization format <Bearer accessToken>");
         } else {
-            customerEntity = utilityService.getCustomer(bearerToken[1]);
+            customerEntity = customerService.getCustomer(bearerToken[1]);
         }
 
         RestaurantEntity restaurantEntity = restaurantService.restaurantByUUID(restaurantId.trim());

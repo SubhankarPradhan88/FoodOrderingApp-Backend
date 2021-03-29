@@ -1,5 +1,13 @@
-# FoodOrderingApp-Backend
+**FoodOrderingApp**
 
+In this project, we have developed from scratch REST API endpoints of various functionalities required for the web app FoodOrderingApp.  
+In order to observe the functionality of the endpoints, we have used the Swagger user interface and store the data in the PostgreSQL database. Also, the project has been implemented using Java Persistence API (JPA).
+
+Technologies used: Spring Boot
+
+List of API endpoints developed are as below:
+
+# FoodOrderingApp-Backend
 
 ## address-controller : Address Controller
 POST /address saveAddress

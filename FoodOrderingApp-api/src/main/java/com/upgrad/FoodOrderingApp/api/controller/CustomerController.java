@@ -19,7 +19,7 @@ import java.util.Base64;
 import java.util.UUID;
 
 @RestController
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "*", exposedHeaders = "access-token")
 @RequestMapping("/")
 
 public class CustomerController {
@@ -45,16 +45,16 @@ public class CustomerController {
         customerEntity.setPassword(signupCustomerRequest.getPassword());
         customerEntity.setContactNumber(signupCustomerRequest.getContactNumber());
 
-        if (customerEntity.getFirstName() == null || customerEntity.getFirstName() == ""){
+        if(customerEntity.getFirstName() == null || customerEntity.getFirstName() == ""){
             throw new SignUpRestrictedException("SGR-005","Except last name all fields should be filled");
         }
         if(customerEntity.getPassword() == null||customerEntity.getPassword() == ""){
             throw new SignUpRestrictedException("SGR-005","Except last name all fields should be filled");
         }
-        if (customerEntity.getEmailAddress() == null||customerEntity.getEmailAddress() == ""){
+        if(customerEntity.getEmailAddress() == null||customerEntity.getEmailAddress() == ""){
             throw new SignUpRestrictedException("SGR-005","Except last name all fields should be filled");
         }
-        if (customerEntity.getContactNumber() == null||customerEntity.getContactNumber() == ""){
+        if(customerEntity.getContactNumber() == null||customerEntity.getContactNumber() == ""){
             throw new SignUpRestrictedException("SGR-005","Except last name all fields should be filled");
         }
 
@@ -72,6 +72,7 @@ public class CustomerController {
      * @return Signin response which has userId and access-token in response header.
      * @throws AuthenticationFailedException : if username or password is invalid
      */
+    @CrossOrigin
     @RequestMapping(method = RequestMethod.POST, path = "/customer/login", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<LoginResponse> login(@RequestHeader("authorization") final String authorization) throws AuthenticationFailedException {
         final String[] decodedArray;

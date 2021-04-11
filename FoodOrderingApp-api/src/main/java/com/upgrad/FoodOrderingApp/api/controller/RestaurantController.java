@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 @RequestMapping("/")
 public class RestaurantController {
 
-
     @Autowired
     RestaurantService restaurantService;
 
@@ -46,6 +45,7 @@ public class RestaurantController {
      * @return List of all restaurants in the database
      * @throws RestaurantNotFoundException
      */
+    @CrossOrigin
     @RequestMapping(method = RequestMethod.GET, path = "/restaurant", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<RestaurantListResponse> getAllRestaurants() throws RestaurantNotFoundException {
 
@@ -92,6 +92,7 @@ public class RestaurantController {
      * @return List of all restaurants in the database
      * @throws RestaurantNotFoundException - when restaurant name field is empty
      */
+    @CrossOrigin
     @RequestMapping(method = RequestMethod.GET, path = "/restaurant/name/{restaurant_name}", produces =
             MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<RestaurantListResponse> restaurantsByName(@PathVariable(
@@ -148,6 +149,7 @@ public class RestaurantController {
      * @throws CategoryNotFoundException   - When Given category id  field is empty
      * @throws RestaurantNotFoundException - When given restaurant id field is empty
      */
+    @CrossOrigin
     @RequestMapping(method = RequestMethod.GET, path = "/restaurant/category/{category_id}", produces =
             MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<RestaurantListResponse> restaurantByCategory(@PathVariable(
@@ -197,6 +199,7 @@ public class RestaurantController {
      * @return Restaurant with details based on given restaurant id
      * @throws RestaurantNotFoundException - When given restaurant id field is empty
      */
+    @CrossOrigin
     @RequestMapping(method = RequestMethod.GET, path = "/restaurant/{restaurant_id}", produces =
             MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<RestaurantDetailsResponse> getRestaurantByRestaurantID(@PathVariable(
